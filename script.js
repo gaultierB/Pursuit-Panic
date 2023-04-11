@@ -122,11 +122,6 @@ function showGameOverMenu() {
         bestScoreList.appendChild(bestScoreItem);
     });
 
-
-
-
-
-
     menuContainer.appendChild(restartButton);
 
     // Ajouter le conteneur au corps de la page
