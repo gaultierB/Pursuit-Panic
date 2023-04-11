@@ -41,7 +41,10 @@ class Obstacle{
                 let valid;
                 let i = 0;
                 do{
-                    this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+                    console.log("generate number:",i);
+                    i++;
+                    this.y = Math.floor(Math.random() * (canvas.height - OBSTACLE_HEIGHT));
+                    console.log("y=",this.y);
                     valid = this.verifyObstacleCollision();
                 }while(!valid)
                 this.x = -OBSTACLE_WIDTH;
@@ -74,8 +77,8 @@ class Obstacle{
     verifyObstacleCollision(){
             for(let i in obstacleList){
                 if(obstacleList[i].y != this.y && obstacleList[i].x != this.x){
-                    if(obstacleList[i].y < this.y + OBSTACLE_HEIGHT &&
-                        obstacleList[i].y + OBSTACLE_HEIGHT > this.y&&
+                    if(obstacleList[i].y < this.y + OBSTACLE_HEIGHT+50 &&
+                        obstacleList[i].y + OBSTACLE_HEIGHT+50 > this.y&&
                         obstacleList[i].x < this.x + OBSTACLE_WIDTH &&
                         obstacleList[i].x + OBSTACLE_WIDTH > this.x)
                     {
