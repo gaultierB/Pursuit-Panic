@@ -16,7 +16,7 @@ let obstacleX = 0;
 let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
 let obstacleSpeed = 5;
-let playerSpeed = 5; // vitesse du joueur
+let playerSpeed = 8; // vitesse du joueur
 let level = 1;
 let limitObstacle = 3;
 
@@ -66,7 +66,6 @@ function moveObstacle() {
 
 //TODO Object ?
 
-
 //TODO Interface Start
 function startGame() {
     const form = document.querySelector("form");
@@ -76,7 +75,6 @@ function startGame() {
         localStorage.setItem("pseudo", pseudo);
         window.location.href = "hello.html";
     });
-
 }
 
 //TODO Interface Game Over Restart Best Score
@@ -119,7 +117,7 @@ function showGameOverMenu() {
     if (score > bestScore) {
         localStorage.setItem("bestScore", score);
     }
-    let bestScoreList = document.createElement("ul");
+    let bestScoreList = document.createElement("ol");
     let bestScoreListTitle = document.createElement("h2");
     bestScoreListTitle.innerText = "Meilleurs scores";
     menuContainer.appendChild(bestScoreListTitle);
@@ -141,11 +139,7 @@ function showGameOverMenu() {
     // Ajouter le conteneur au corps de la page
     document.body.appendChild(menuContainer);
     gameOver = true;
-
 }
-
-//TODO Interface Game Over Restart Best Score
-
 
 function detectCollision() {
     if (
@@ -154,8 +148,7 @@ function detectCollision() {
         playerY < obstacleY + OBSTACLE_HEIGHT &&
         playerY + PLAYER_HEIGHT > obstacleY
     ) {
-        alert("Game over!");
-        document.location.reload();
+        showGameOverMenu();
     }
 }
 
@@ -167,8 +160,17 @@ function nextLevel() {
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
 }
+let gameOver = false;
+let requestId;
+requestId = requestAnimationFrame(draw);
 
 function draw() {
+    if (gameOver) {
+        cancelAnimationFrame(requestId);
+        return;
+    }
+
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawObstacle();
@@ -176,7 +178,6 @@ function draw() {
     drawLevel();
     moveObstacle();
     detectCollision();
-
 }
 
 document.addEventListener("keydown", (event) => {
@@ -189,4 +190,3 @@ document.addEventListener("keydown", (event) => {
 });
 
 setInterval(draw, 10);
-
