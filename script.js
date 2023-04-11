@@ -1,3 +1,5 @@
+import {Road} from "./Road.js"
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -60,8 +62,6 @@ function moveObstacle() {
         score++;
     }
 }
-genRoad();
-
 
 function genRoad() {
     // On génère la première route
@@ -71,9 +71,11 @@ function genRoad() {
     // On génère les routes suivantes
     for (let i = 1; i < limitRoad; i++) {
         let newRoadY = lastRoadY;
-        while (Math.abs(newRoadY - lastRoadY) < ROAD_HEIGHT) {
+
+        while (Math.abs(newRoadY - lastRoadY) < ROAD_HEIGHT || listRoads.includes(newRoadY)) {
             newRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
         }
+
         if (Math.abs(newRoadY - playerY) > PLAYER_HEIGHT + ROAD_HEIGHT) {
             listRoads.push(newRoadY);
             lastRoadY = newRoadY;
@@ -81,8 +83,11 @@ function genRoad() {
     }
 }
 
-
-
+function genRoad2() {
+    let road1 = new Road(canvas, playerX, playerY);
+    console.log(road1);
+    road1.draw(ctx);
+}
 
 //TODO multiple spawn obstacle
     //TODO spawn obstacle not same case
@@ -127,6 +132,7 @@ function nextLevel() {
     limitRoad += 1;
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
+    genRoad();
 }
 
 function draw() {
@@ -149,4 +155,7 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+genRoad();
+let road = new Road(canvas, playerX, playerY);
+road.draw(ctx);
 setInterval(draw, 10);
