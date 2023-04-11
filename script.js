@@ -59,14 +59,20 @@ function moveObstacle() {
 }
 
 //TODO multiple spawn obstacle
-    //TODO spawn obstacle not same case
+//TODO spawn obstacle not same case
 
 //TODO funtion draw road
-    //TODO limit spawn obstacle on road
+//TODO limit spawn obstacle on road
 
 //TODO Object ?
 
+//TODO Interface Start
+function startGame() {
+    window.location.href = "hello.html";
+}
+
 //TODO Interface Game Over Restart Best Score
+
 
 function detectCollision() {
     if (
@@ -101,11 +107,11 @@ function draw() {
 }
 
 document.addEventListener("keydown", (event) => {
-     if (event.key === "ArrowUp") {
-         playerY -= playerSpeed; // mise à jour de la position du joueur
-         if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
-             nextLevel(); // passer au niveau suivant
-         }
+    if (event.key === "ArrowUp") {
+        playerY -= playerSpeed; // mise à jour de la position du joueur
+        if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
+            nextLevel(); // passer au niveau suivant
+        }
     }
 });
 
