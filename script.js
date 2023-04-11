@@ -8,6 +8,7 @@ const PLAYER_WIDTH = 30;
 const PLAYER_HEIGHT = 30;
 const OBSTACLE_WIDTH = 50;
 const OBSTACLE_HEIGHT = 50;
+const ROAD_HEIGHT = OBSTACLE_HEIGHT;
 
 
 let playerX = canvas.width / 2 - PLAYER_WIDTH / 2;
@@ -19,6 +20,8 @@ let obstacleSpeed = 5;
 let playerSpeed = 5; // vitesse du joueur
 let level = 1;
 let limitObstacle = 3;
+let limitRoad = 3;
+let listRoads = [];
 
 
 function drawPlayer() {
@@ -57,6 +60,29 @@ function moveObstacle() {
         score++;
     }
 }
+genRoad();
+
+
+function genRoad() {
+    // On génère la première route
+    let lastRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
+    listRoads.push(lastRoadY);
+
+    // On génère les routes suivantes
+    for (let i = 1; i < limitRoad; i++) {
+        let newRoadY = lastRoadY;
+        while (Math.abs(newRoadY - lastRoadY) < ROAD_HEIGHT) {
+            newRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
+        }
+        if (Math.abs(newRoadY - playerY) > PLAYER_HEIGHT + ROAD_HEIGHT) {
+            listRoads.push(newRoadY);
+            lastRoadY = newRoadY;
+        }
+    }
+}
+
+
+
 
 //TODO multiple spawn obstacle
     //TODO spawn obstacle not same case
@@ -68,6 +94,7 @@ function moveObstacle() {
 
 //TODO Interface Game Over Restart Best Score
 
+// TODO No Spawn road + road forward player
 function detectCollision() {
     if (
         playerX < obstacleX + OBSTACLE_WIDTH &&
@@ -80,24 +107,37 @@ function detectCollision() {
     }
 }
 
+function drawRoad(roadY){
+    ctx.beginPath();
+    ctx.rect(0, roadY, canvas.width, ROAD_HEIGHT);
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+    ctx.closePath();
+}
+
+function drawAllRoad(){
+    listRoads.forEach(roadY => drawRoad(roadY))
+}
+
 function nextLevel() {
     level++; // augmenter le niveau
     playerY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
     obstacleX = -OBSTACLE_WIDTH; // réinitialiser la position de l'obstacle
     obstacleY = Math.random() * (canvas.height - OBSTACLE_HEIGHT); // réinitialiser la position de l'obstacle
+    limitRoad += 1;
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawAllRoad();
     drawPlayer();
     drawObstacle();
     drawScore();
     drawLevel();
     moveObstacle();
     detectCollision();
-
 }
 
 document.addEventListener("keydown", (event) => {
