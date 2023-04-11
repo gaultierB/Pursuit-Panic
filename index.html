@@ -8,11 +8,17 @@
 </head>
 
 <body>
-
-    <div id="ecranDemarrage" onclick="startGame()">
+    <div id="startGame">
         <h1>Welcome</h1>
-        <button id="start-game">Start</button>
+        <form>
+            <label for="pseudo">Entrez votre pseudo :</label>
+            <input type="text" id="pseudo" name="pseudo" required>
+            <br>
+            <br>
+            <button type="submit" id="start-game" onclick="startGame()">Start</button>
+        </form>
     </div>
+
 </body>
 
 </html>

@@ -66,9 +66,82 @@ function moveObstacle() {
 
 //TODO Object ?
 
+
 //TODO Interface Start
 function startGame() {
-    window.location.href = "hello.html";
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const pseudo = document.getElementById("pseudo").value;
+        localStorage.setItem("pseudo", pseudo);
+        window.location.href = "hello.html";
+    });
+
+}
+
+//TODO Interface Game Over Restart Best Score
+function showGameOverMenu() {
+    let menuContainer = document.createElement("div");
+    menuContainer.style.position = "absolute";
+    menuContainer.style.top = "50%";
+    menuContainer.style.left = "50%";
+    menuContainer.style.transform = "translate(-50%, -50%)";
+    menuContainer.style.backgroundColor = "#FFFFFF";
+    menuContainer.style.padding = "20px";
+    menuContainer.style.border = "2px solid #000000";
+    menuContainer.style.textAlign = "center";
+
+    // Ajouter le texte "Game Over" au conteneur
+    let gameOverText = document.createElement("h1");
+    gameOverText.innerText = "Game Over";
+    menuContainer.appendChild(gameOverText);
+
+    // Ajouter le champ meilleur score au conteneur
+    let bestScoreLabel = document.createElement("label");
+    bestScoreLabel.innerText = "Dernier Score : ";
+    let bestScoreInput = document.createElement("input");
+    bestScoreInput.type = "text";
+    bestScoreInput.value = localStorage.getItem("bestScore") || 0;
+    bestScoreInput.disabled = true;
+    menuContainer.appendChild(bestScoreLabel);
+    menuContainer.appendChild(bestScoreInput);
+
+    // Ajouter le bouton restart au conteneur
+    let restartButton = document.createElement("button");
+    restartButton.innerText = "Rejouer";
+    restartButton.onclick = () => {
+        localStorage.setItem("bestScore", score);
+        document.location.reload();
+    };
+
+    //récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
+    let bestScore = localStorage.getItem("bestScore") || 0;
+    if (score > bestScore) {
+        localStorage.setItem("bestScore", score);
+    }
+    let bestScoreList = document.createElement("ul");
+    let bestScoreListTitle = document.createElement("h2");
+    bestScoreListTitle.innerText = "Meilleurs scores";
+    menuContainer.appendChild(bestScoreListTitle);
+    menuContainer.appendChild(bestScoreList);
+    let bestScores = JSON.parse(localStorage.getItem("bestScores")) || [];
+    bestScores.push(score);
+    bestScores.sort((a, b) => b - a);
+    bestScores = bestScores.slice(0, 5);
+    localStorage.setItem("bestScores", JSON.stringify(bestScores));
+    bestScores.forEach((score) => {
+        let bestScoreItem = document.createElement("li");
+        bestScoreItem.innerText = score;
+        bestScoreList.appendChild(bestScoreItem);
+    }
+    );
+
+    menuContainer.appendChild(restartButton);
+
+    // Ajouter le conteneur au corps de la page
+    document.body.appendChild(menuContainer);
+    gameOver = true;
+
 }
 
 //TODO Interface Game Over Restart Best Score
@@ -116,3 +189,4 @@ document.addEventListener("keydown", (event) => {
 });
 
 setInterval(draw, 10);
+
