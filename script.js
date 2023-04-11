@@ -38,7 +38,10 @@ class Obstacle{
         if(!this.reverse){
             this.x += speed;
             if (this.x > canvas.width) {
-                this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+                /*do{
+                    this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+                }while(this.verifyObstacleCollision())*/
+                this.verifyObstacleCollision();
                 this.x = -OBSTACLE_WIDTH;
                 score++;
             }
@@ -66,15 +69,31 @@ class Obstacle{
         }
     }
 
-    verifyObstacleCollision(pObstacle){
-        if(pObstacle.y < this.y + OBSTACLE_HEIGHT &&
-            pObstacle.y + OBSTACLE_HEIGHT > this.y)
-            {
-                return true;
+    verifyObstacleCollision(){
+        let valid = false;
+        do{
+            this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+            console.log("random generated");
+
+            console.log("verification");
+            for(let i in obstacleList){
+                if(obstacleList[i].y != this.y && obstacleList[i].x != this.x){
+                    if(obstacleList[i].y < this.y + OBSTACLE_HEIGHT &&
+                        obstacleList[i].y + OBSTACLE_HEIGHT > this.y)
+                    {
+                        console.warn("collision detected");
+                        valid=false;
+                        break;
+                    }
+                    else{
+                        valid=true;
+                    }
+                }
+                else{
+                    console.log("it's me");
+                }
             }
-        else{
-            return false;
-        }
+        }while(!valid)
     }
 }
 
@@ -106,16 +125,6 @@ function moveObstacle(obstacle) {
     obstacle.move(obstacleSpeed);
 }
 
-//TODO multiple spawn obstacle
-    //TODO spawn obstacle not same case
-
-//TODO funtion draw road
-    //TODO limit spawn obstacle on road
-
-//TODO Object ?
-
-//TODO Interface Game Over Restart Best Score
-
 function detectCollision(obstacle) {
     if (
         obstacle.detectCollision(playerX,playerY,PLAYER_HEIGHT,PLAYER_WIDTH)
@@ -138,7 +147,6 @@ function nextLevel() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
-    createObstacle();
     drawScore();
     drawLevel();
     obstacleList.forEach(drawObstacles);
@@ -149,7 +157,7 @@ function draw() {
 
 function createObstacle(){
     let reverse = false
-    for(let i = obstacleList.length ; i<limitObstacle; i++){
+    for(let i = 0 ; i<limitObstacle; i++){
         if(reverse){
             obstacleList.push(new Obstacle(0,-OBSTACLE_HEIGHT,reverse));
             reverse = false;
@@ -170,4 +178,5 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+createObstacle();
 setInterval(draw, 10);
