@@ -16,12 +16,14 @@ let score = 0;
 let obstacleSpeed = 5;
 let playerSpeed = 5; // vitesse du joueur
 let level = 1;
-let limitObstacle = 3;
+let limitObstacle = 4;
+const obstacleList= [];
 
 class Obstacle{
-    constructor(x,y){
+    constructor(x,y,reverse){
         this.x=x;
         this.y=y;
+        this.reverse = reverse;
     }
 
     draw(color){
@@ -31,11 +33,50 @@ class Obstacle{
         ctx.fill();
         ctx.closePath();
     }
-}
 
-let obstacle = new Obstacle(0,-OBSTACLE_HEIGHT);
-let obstacle2 = new Obstacle(0,-OBSTACLE_HEIGHT);
-let obstacle3 = new Obstacle(0,-OBSTACLE_HEIGHT);
+    move(speed){
+        if(!this.reverse){
+            this.x += speed;
+            if (this.x > canvas.width) {
+                this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+                this.x = -OBSTACLE_WIDTH;
+                score++;
+            }
+        }
+        else{
+            this.x -= speed;
+            if (this.x <= 0) {
+                this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+                this.x = canvas.width;
+                score++;
+            }
+        }
+    }
+
+    detectCollision(pPlayerX,pPlayerY,pPLAYER_HEIGHT,pPLAYER_WIDTH){
+        if(pPlayerX < this.x + OBSTACLE_WIDTH &&
+            pPlayerX + pPLAYER_WIDTH > this.x &&
+            pPlayerY < this.y + OBSTACLE_HEIGHT &&
+            pPlayerY + pPLAYER_HEIGHT > this.y)
+            {
+                return true;
+            }
+        else{
+            return false;
+        }
+    }
+
+    verifyObstacleCollision(pObstacle){
+        if(pObstacle.y < this.y + OBSTACLE_HEIGHT &&
+            pObstacle.y + OBSTACLE_HEIGHT > this.y)
+            {
+                return true;
+            }
+        else{
+            return false;
+        }
+    }
+}
 
 function drawPlayer() {
     ctx.beginPath();
@@ -45,11 +86,8 @@ function drawPlayer() {
     ctx.closePath();
 }
 
-function drawObstacles() {
-
+function drawObstacles(obstacle) {
     obstacle.draw("#FF0000");
-    obstacle2.draw("#FFFF00");
-    obstacle3.draw("#FF00FF");
 }
 
 function drawScore() {
@@ -64,26 +102,8 @@ function drawLevel() {
     ctx.fillText("Level: " + level, 8, 50);
 }
 
-function moveObstacle() {
-    obstacle.x += obstacleSpeed;
-    obstacle2.x += obstacleSpeed;
-    obstacle3.x += obstacleSpeed;
-    if (obstacle.x > canvas.width) {
-        obstacle.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
-        obstacle.x = -OBSTACLE_WIDTH;
-        score++;
-    }
-    if (obstacle2.x > canvas.width) {
-        obstacle2.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
-        obstacle2.x = -OBSTACLE_WIDTH;
-        score++;
-    }
-    
-    if (obstacle3.x > canvas.width) {
-        obstacle3.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
-        obstacle3.x = -OBSTACLE_WIDTH;
-        score++;
-    }
+function moveObstacle(obstacle) {
+    obstacle.move(obstacleSpeed);
 }
 
 //TODO multiple spawn obstacle
@@ -96,25 +116,15 @@ function moveObstacle() {
 
 //TODO Interface Game Over Restart Best Score
 
-function detectCollision() {
+function detectCollision(obstacle) {
     if (
-        playerX < obstacle.x + OBSTACLE_WIDTH &&
-        playerX + PLAYER_WIDTH > obstacle.x &&
-        playerY < obstacle.y + OBSTACLE_HEIGHT &&
-        playerY + PLAYER_HEIGHT > obstacle.y||
-        playerX < obstacle2.x + OBSTACLE_WIDTH &&
-        playerX + PLAYER_WIDTH > obstacle2.y &&
-        playerY < obstacle2.y + OBSTACLE_HEIGHT &&
-        playerY + PLAYER_HEIGHT > obstacle2.y||
-        playerX < obstacle3.x + OBSTACLE_WIDTH &&
-        playerX + PLAYER_WIDTH > obstacle3.x &&
-        playerY < obstacle3.y + OBSTACLE_HEIGHT &&
-        playerY + PLAYER_HEIGHT > obstacle3.y
+        obstacle.detectCollision(playerX,playerY,PLAYER_HEIGHT,PLAYER_WIDTH)
     ) {
         alert("Game over!");
         document.location.reload();
     }
 }
+
 
 function nextLevel() {
     level++; // augmenter le niveau
@@ -128,12 +138,27 @@ function nextLevel() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
-    drawObstacles();
+    createObstacle();
     drawScore();
     drawLevel();
-    moveObstacle();
-    detectCollision();
+    obstacleList.forEach(drawObstacles);
+    obstacleList.forEach(moveObstacle);
+    obstacleList.forEach(detectCollision)
 
+}
+
+function createObstacle(){
+    let reverse = false
+    for(let i = obstacleList.length ; i<limitObstacle; i++){
+        if(reverse){
+            obstacleList.push(new Obstacle(0,-OBSTACLE_HEIGHT,reverse));
+            reverse = false;
+        }
+        else{
+            obstacleList.push(new Obstacle(canvas.width,-OBSTACLE_HEIGHT,reverse));
+            reverse = true;
+        }
+    }
 }
 
 document.addEventListener("keydown", (event) => {
