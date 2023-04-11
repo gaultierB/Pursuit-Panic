@@ -120,7 +120,8 @@ function showGameOverMenu() {
         let bestScoreItem = document.createElement("li");
         bestScoreItem.innerText = score;
         bestScoreList.appendChild(bestScoreItem);
-    });
+    }
+    );
 
     menuContainer.appendChild(restartButton);
 
