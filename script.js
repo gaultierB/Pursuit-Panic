@@ -111,7 +111,7 @@ function showGameOverMenu() {
     if (score > bestScore) {
         localStorage.setItem("bestScore", score);
     }
-    let bestScoreList = document.createElement("ul");
+    let bestScoreList = document.createElement("ol");
     let bestScoreListTitle = document.createElement("h2");
     bestScoreListTitle.innerText = "Meilleurs scores";
     menuContainer.appendChild(bestScoreListTitle);
@@ -122,10 +122,10 @@ function showGameOverMenu() {
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
     bestScores.forEach((score) => {
-        let bestScoreItem = document.createElement("li");
-        bestScoreItem.innerText = score;
-        bestScoreList.appendChild(bestScoreItem);
-    }
+            let bestScoreItem = document.createElement("li");
+            bestScoreItem.innerText = score;
+            bestScoreList.appendChild(bestScoreItem);
+        }
     );
 
     menuContainer.appendChild(restartButton);
