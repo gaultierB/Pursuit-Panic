@@ -16,7 +16,7 @@ let obstacleX = 0;
 let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
 let obstacleSpeed = 5;
-let playerSpeed = 5; // vitesse du joueur
+let playerSpeed = 8; // vitesse du joueur
 let level = 1;
 let limitObstacle = 3;
 
