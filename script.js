@@ -38,10 +38,12 @@ class Obstacle{
         if(!this.reverse){
             this.x += speed;
             if (this.x > canvas.width) {
-                /*do{
+                let valid;
+                let i = 0;
+                do{
                     this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
-                }while(this.verifyObstacleCollision())*/
-                this.verifyObstacleCollision();
+                    valid = this.verifyObstacleCollision();
+                }while(!valid)
                 this.x = -OBSTACLE_WIDTH;
                 score++;
             }
@@ -70,30 +72,22 @@ class Obstacle{
     }
 
     verifyObstacleCollision(){
-        let valid = false;
-        do{
-            this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
-            console.log("random generated");
-
-            console.log("verification");
             for(let i in obstacleList){
                 if(obstacleList[i].y != this.y && obstacleList[i].x != this.x){
                     if(obstacleList[i].y < this.y + OBSTACLE_HEIGHT &&
-                        obstacleList[i].y + OBSTACLE_HEIGHT > this.y)
+                        obstacleList[i].y + OBSTACLE_HEIGHT > this.y&&
+                        obstacleList[i].x < this.x + OBSTACLE_WIDTH &&
+                        obstacleList[i].x + OBSTACLE_WIDTH > this.x)
                     {
                         console.warn("collision detected");
-                        valid=false;
-                        break;
-                    }
-                    else{
-                        valid=true;
+                        return false;
                     }
                 }
                 else{
                     console.log("it's me");
                 }
             }
-        }while(!valid)
+            return true;
     }
 }
 
