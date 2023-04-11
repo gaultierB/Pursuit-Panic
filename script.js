@@ -12,14 +12,30 @@ const OBSTACLE_HEIGHT = 50;
 
 let playerX = canvas.width / 2 - PLAYER_WIDTH / 2;
 let playerY = canvas.height - PLAYER_HEIGHT - 10;
-let obstacleX = 0;
-let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
 let obstacleSpeed = 5;
 let playerSpeed = 5; // vitesse du joueur
 let level = 1;
 let limitObstacle = 3;
 
+class Obstacle{
+    constructor(x,y){
+        this.x=x;
+        this.y=y;
+    }
+
+    draw(color){
+        ctx.beginPath();
+        ctx.rect(this.x, this.y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.closePath();
+    }
+}
+
+let obstacle = new Obstacle(0,-OBSTACLE_HEIGHT);
+let obstacle2 = new Obstacle(0,-OBSTACLE_HEIGHT);
+let obstacle3 = new Obstacle(0,-OBSTACLE_HEIGHT);
 
 function drawPlayer() {
     ctx.beginPath();
@@ -29,12 +45,11 @@ function drawPlayer() {
     ctx.closePath();
 }
 
-function drawObstacle() {
-    ctx.beginPath();
-    ctx.rect(obstacleX, obstacleY, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
-    ctx.fillStyle = "#FF0000";
-    ctx.fill();
-    ctx.closePath();
+function drawObstacles() {
+
+    obstacle.draw("#FF0000");
+    obstacle2.draw("#FFFF00");
+    obstacle3.draw("#FF00FF");
 }
 
 function drawScore() {
@@ -50,10 +65,23 @@ function drawLevel() {
 }
 
 function moveObstacle() {
-    obstacleX += obstacleSpeed;
-    if (obstacleX > canvas.width) {
-        obstacleY = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
-        obstacleX = -OBSTACLE_WIDTH;
+    obstacle.x += obstacleSpeed;
+    obstacle2.x += obstacleSpeed;
+    obstacle3.x += obstacleSpeed;
+    if (obstacle.x > canvas.width) {
+        obstacle.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+        obstacle.x = -OBSTACLE_WIDTH;
+        score++;
+    }
+    if (obstacle2.x > canvas.width) {
+        obstacle2.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+        obstacle2.x = -OBSTACLE_WIDTH;
+        score++;
+    }
+    
+    if (obstacle3.x > canvas.width) {
+        obstacle3.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+        obstacle3.x = -OBSTACLE_WIDTH;
         score++;
     }
 }
@@ -70,10 +98,18 @@ function moveObstacle() {
 
 function detectCollision() {
     if (
-        playerX < obstacleX + OBSTACLE_WIDTH &&
-        playerX + PLAYER_WIDTH > obstacleX &&
-        playerY < obstacleY + OBSTACLE_HEIGHT &&
-        playerY + PLAYER_HEIGHT > obstacleY
+        playerX < obstacle.x + OBSTACLE_WIDTH &&
+        playerX + PLAYER_WIDTH > obstacle.x &&
+        playerY < obstacle.y + OBSTACLE_HEIGHT &&
+        playerY + PLAYER_HEIGHT > obstacle.y||
+        playerX < obstacle2.x + OBSTACLE_WIDTH &&
+        playerX + PLAYER_WIDTH > obstacle2.y &&
+        playerY < obstacle2.y + OBSTACLE_HEIGHT &&
+        playerY + PLAYER_HEIGHT > obstacle2.y||
+        playerX < obstacle3.x + OBSTACLE_WIDTH &&
+        playerX + PLAYER_WIDTH > obstacle3.x &&
+        playerY < obstacle3.y + OBSTACLE_HEIGHT &&
+        playerY + PLAYER_HEIGHT > obstacle3.y
     ) {
         alert("Game over!");
         document.location.reload();
@@ -92,7 +128,7 @@ function nextLevel() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
-    drawObstacle();
+    drawObstacles();
     drawScore();
     drawLevel();
     moveObstacle();
