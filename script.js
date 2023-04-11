@@ -85,7 +85,7 @@ function showGameOverMenu() {
 
     // Ajouter le champ meilleur score au conteneur
     let bestScoreLabel = document.createElement("label");
-    bestScoreLabel.innerText = "Meilleur Score : ";
+    bestScoreLabel.innerText = "Dernier Score : ";
     let bestScoreInput = document.createElement("input");
     bestScoreInput.type = "text";
     bestScoreInput.value = localStorage.getItem("bestScore") || 0;
@@ -152,29 +152,21 @@ function nextLevel() {
 let gameOver = false;
 let requestId;
 function draw() {
+    requestId = requestAnimationFrame(draw);
+
     if (gameOver) {
         cancelAnimationFrame(requestId);
         return;
     }
 
-    requestId = requestAnimationFrame(draw);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     drawPlayer();
-
     drawObstacle();
-
     drawScore();
-
     drawLevel();
-
     moveObstacle();
-
     detectCollision();
-
-
-
 }
 
 document.addEventListener("keydown", (event) => {
