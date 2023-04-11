@@ -59,14 +59,56 @@ function moveObstacle() {
 }
 
 //TODO multiple spawn obstacle
-    //TODO spawn obstacle not same case
+//TODO spawn obstacle not same case
 
 //TODO funtion draw road
-    //TODO limit spawn obstacle on road
+//TODO limit spawn obstacle on road
 
 //TODO Object ?
 
 //TODO Interface Game Over Restart Best Score
+function showGameOverMenu() {
+
+    // Créer un conteneur pour le menu
+    const menuContainer = document.createElement("div");
+    menuContainer.style.position = "absolute";
+    menuContainer.style.top = "50%";
+    menuContainer.style.left = "50%";
+    menuContainer.style.transform = "translate(-50%, -50%)";
+    menuContainer.style.backgroundColor = "#FFFFFF";
+    menuContainer.style.padding = "20px";
+    menuContainer.style.border = "2px solid #000000";
+    menuContainer.style.textAlign = "center";
+
+    // Ajouter le texte "Game Over" au conteneur
+    const gameOverText = document.createElement("h1");
+    gameOverText.innerText = "Game Over";
+    menuContainer.appendChild(gameOverText);
+
+    // Ajouter le champ meilleur score au conteneur
+    const bestScoreLabel = document.createElement("label");
+    bestScoreLabel.innerText = "Meilleur Score : ";
+    const bestScoreInput = document.createElement("input");
+    bestScoreInput.type = "text";
+    bestScoreInput.value = localStorage.getItem("bestScore") || 0;
+    bestScoreInput.disabled = true;
+    menuContainer.appendChild(bestScoreLabel);
+    menuContainer.appendChild(bestScoreInput);
+
+    // Ajouter le bouton restart au conteneur
+    const restartButton = document.createElement("button");
+    restartButton.innerText = "Rejouer";
+    restartButton.onclick = () => {
+        localStorage.setItem("bestScore", score);
+        document.location.reload();
+    };
+    menuContainer.appendChild(restartButton);
+
+    // Ajouter le conteneur au corps de la page
+    document.body.appendChild(menuContainer);
+    gameOver = true;
+}
+
 
 function detectCollision() {
     if (
@@ -75,8 +117,7 @@ function detectCollision() {
         playerY < obstacleY + OBSTACLE_HEIGHT &&
         playerY + PLAYER_HEIGHT > obstacleY
     ) {
-        alert("Game over!");
-        document.location.reload();
+        showGameOverMenu();
     }
 }
 
@@ -88,8 +129,16 @@ function nextLevel() {
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
 }
-
+let gameOver = false;
+let requestId;
 function draw() {
+    if (gameOver) {
+        cancelAnimationFrame(requestId);
+        return;
+    }
+
+    requestId = requestAnimationFrame(draw);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawObstacle();
@@ -101,11 +150,11 @@ function draw() {
 }
 
 document.addEventListener("keydown", (event) => {
-     if (event.key === "ArrowUp") {
-         playerY -= playerSpeed; // mise à jour de la position du joueur
-         if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
-             nextLevel(); // passer au niveau suivant
-         }
+    if (event.key === "ArrowUp") {
+        playerY -= playerSpeed; // mise à jour de la position du joueur
+        if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
+            nextLevel(); // passer au niveau suivant
+        }
     }
 });
 
