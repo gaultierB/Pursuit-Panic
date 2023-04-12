@@ -18,13 +18,13 @@ let playerX = canvas.width / 2 - PLAYER_WIDTH / 2;
 let playerY = canvas.height - PLAYER_HEIGHT - 10;
 
 let playerImageStop = new Image();
-playerImageStop.src = "man-stop.png"; // Image pour le joueur immobile
+playerImageStop.src = "assets/man-stop.png"; // Image pour le joueur immobile
 
 let playerImageRun1 = new Image();
-playerImageRun1.src = "man-run-1.png"; // Image pour le joueur en mouvement 1
+playerImageRun1.src = "assets/man-run-1.png"; // Image pour le joueur en mouvement 1
 
 let playerImageRun2 = new Image();
-playerImageRun2.src = "man-run-2.png"; // Image pour le joueur en mouvement 2
+playerImageRun2.src = "assets/man-run-2.png"; // Image pour le joueur en mouvement 2
 
 let playerRunAnimationInterval = null;
 let playerRunImageIndex = 0;
