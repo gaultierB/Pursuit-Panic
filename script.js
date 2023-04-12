@@ -123,6 +123,8 @@ function moveObstacle(obstacle) {
 }
 
 function detectCollision(obstacle) {
+
+}
 //TODO multiple spawn obstacle
 //TODO spawn obstacle not same case
 
@@ -195,7 +197,7 @@ function showGameOverMenu() {
     gameOver = true;
 }
 
-function detectCollision() {
+function detectCollision(obstacle) {
     if (
         obstacle.detectCollision(playerX,playerY,PLAYER_HEIGHT,PLAYER_WIDTH)
     ) {
@@ -212,23 +214,24 @@ function nextLevel() {
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
 }
+
 let gameOver = false;
 let requestId;
+requestId = requestAnimationFrame(draw);
+
 function draw() {
-    requestId = requestAnimationFrame(draw);
 
     if (gameOver) {
         cancelAnimationFrame(requestId);
         return;
     }
 
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawScore();
     drawLevel();
-    obstacleList.forEach(drawObstacles);
     obstacleList.forEach(moveObstacle);
+    obstacleList.forEach(drawObstacles);
     obstacleList.forEach(detectCollision)
 
 }
