@@ -19,12 +19,12 @@ let playerY = canvas.height - PLAYER_HEIGHT - 10;
 let obstacleX = 0;
 let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
-let obstacleSpeed = 5;
-let playerSpeed = 8; // vitesse du joueur
-let level = 1;
-let limitObstacle = 4;
-const obstacleList= [];
-let limitRoad = 3;
+let obstacleSpeed = 4;
+let playerSpeed = 5; // vitesse du joueur
+let level = 0;
+let limitObstacle = 3;
+let obstacleList= [];
+let limitRoad = 1;
 let listRoads = [];
 
 class Obstacle{
@@ -275,14 +275,16 @@ function drawAllRoad(){
 }
 
 function nextLevel() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     level++; // augmenter le niveau
     playerY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
-    obstacleX = -OBSTACLE_WIDTH; // réinitialiser la position de l'obstacle
-    obstacleY = Math.random() * (canvas.height - OBSTACLE_HEIGHT); // réinitialiser la position de l'obstacle
     limitRoad += 1;
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
+    listRoads = [];
+    obstacleList = [];
     genRoad();
+    createObstacle();
 }
 
 let gameOver = false;
@@ -329,6 +331,5 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
-genRoad();
-createObstacle();
+nextLevel();
 setInterval(draw, 10);
