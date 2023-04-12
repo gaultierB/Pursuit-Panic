@@ -115,14 +115,16 @@ function detectCollision2(rect1X, rect1Y, rect1Width, rect1Height, rect2X, rect2
     }
 }
 function checkRoad(newRoadY) {
-    if (detectCollision2(playerX, playerY + 10, PLAYER_WIDTH, PLAYER_HEIGHT - 90, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)) {
+    let playerL = playerY + PLAYER_HEIGHT - 100;
+    let roadL = newRoadY + ROAD_HEIGHT
+
+    if (playerL < roadL) {
         return true;
     }
     for (let lastRoadY in listRoads) {
         if (detectCollision2(roadX, lastRoadY, ROAD_WIDTH, ROAD_HEIGHT, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)) {
             return true;
         }
-
     }
     return false;
 }
@@ -131,14 +133,12 @@ function genRoad() {
     for (let i = 0; i < limitRoad; i++) {
         let newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
         let cpt = 0;
-        while (checkRoad(newRoadY) && cpt != 20) {
-            console.log("boucle")
+        while (checkRoad(newRoadY + 50) && cpt != 20) {
             cpt++;
             newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
         }
-        let newRoadYRight = newRoadY + ROAD_HEIGHT + 20;
         listRoads.push(newRoadY);
-        listRoads.push(newRoadYRight);
+        listRoads.push(newRoadY + 90);
     }
 }
 
@@ -239,7 +239,9 @@ function nextLevel() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     level++; // augmenter le niveau
     playerY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
-    limitRoad += 1;
+    if(limitRoad < 3){
+        limitRoad += 1;
+    }
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
     listRoads = [];
