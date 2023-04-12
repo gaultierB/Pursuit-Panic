@@ -12,14 +12,87 @@ const OBSTACLE_HEIGHT = 50;
 
 let playerX = canvas.width / 2 - PLAYER_WIDTH / 2;
 let playerY = canvas.height - PLAYER_HEIGHT - 10;
-let obstacleX = 0;
-let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
 let obstacleSpeed = 5;
 let playerSpeed = 5; // vitesse du joueur
 let level = 1;
-let limitObstacle = 3;
+let limitObstacle = 4;
+const obstacleList= [];
 
+class Obstacle{
+    constructor(x,y,reverse){
+        this.x=x;
+        this.y=y;
+        this.reverse = reverse;
+    }
+
+    draw(color){
+        ctx.beginPath();
+        ctx.rect(this.x, this.y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    move(speed){
+        if(!this.reverse){
+            this.x += speed;
+            if (this.x > canvas.width) {
+                let valid;
+                let i = 0;
+                do{
+                    console.log("generate number:",i);
+                    i++;
+                    this.y = Math.floor(Math.random() * (canvas.height - OBSTACLE_HEIGHT));
+                    console.log("y=",this.y);
+                    valid = this.verifyObstacleCollision();
+                }while(!valid)
+                this.x = -OBSTACLE_WIDTH;
+                score++;
+            }
+        }
+        else{
+            this.x -= speed;
+            if (this.x <= 0) {
+                this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+                this.x = canvas.width;
+                score++;
+            }
+        }
+    }
+
+    detectCollision(pPlayerX,pPlayerY,pPLAYER_HEIGHT,pPLAYER_WIDTH){
+        if(pPlayerX < this.x + OBSTACLE_WIDTH &&
+            pPlayerX + pPLAYER_WIDTH > this.x &&
+            pPlayerY < this.y + OBSTACLE_HEIGHT &&
+            pPlayerY + pPLAYER_HEIGHT > this.y)
+            {
+                return true;
+            }
+        else{
+            return false;
+        }
+    }
+
+    verifyObstacleCollision(){
+            for(let i in obstacleList){
+                if(obstacleList[i].y != this.y && obstacleList[i].x != this.x){
+                    if(obstacleList[i].y < this.y + OBSTACLE_HEIGHT+50 &&
+                        obstacleList[i].y + OBSTACLE_HEIGHT+50 > this.y&&
+                        obstacleList[i].x < this.x + OBSTACLE_WIDTH &&
+                        obstacleList[i].x + OBSTACLE_WIDTH > this.x)
+                    {
+                        console.warn("collision detected");
+                        return false;
+                    }
+                }
+                else{
+                    console.log("it's me");
+                }
+            }
+            return true;
+    }
+}
 
 function drawPlayer() {
     ctx.beginPath();
@@ -29,12 +102,8 @@ function drawPlayer() {
     ctx.closePath();
 }
 
-function drawObstacle() {
-    ctx.beginPath();
-    ctx.rect(obstacleX, obstacleY, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
-    ctx.fillStyle = "#FF0000";
-    ctx.fill();
-    ctx.closePath();
+function drawObstacles(obstacle) {
+    obstacle.draw("#FF0000");
 }
 
 function drawScore() {
@@ -49,15 +118,11 @@ function drawLevel() {
     ctx.fillText("Level: " + level, 8, 50);
 }
 
-function moveObstacle() {
-    obstacleX += obstacleSpeed;
-    if (obstacleX > canvas.width) {
-        obstacleY = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
-        obstacleX = -OBSTACLE_WIDTH;
-        score++;
-    }
+function moveObstacle(obstacle) {
+    obstacle.move(obstacleSpeed);
 }
 
+function detectCollision(obstacle) {
 //TODO multiple spawn obstacle
 //TODO spawn obstacle not same case
 
@@ -132,14 +197,12 @@ function showGameOverMenu() {
 
 function detectCollision() {
     if (
-        playerX < obstacleX + OBSTACLE_WIDTH &&
-        playerX + PLAYER_WIDTH > obstacleX &&
-        playerY < obstacleY + OBSTACLE_HEIGHT &&
-        playerY + PLAYER_HEIGHT > obstacleY
+        obstacle.detectCollision(playerX,playerY,PLAYER_HEIGHT,PLAYER_WIDTH)
     ) {
         showGameOverMenu();
     }
 }
+
 
 function nextLevel() {
     level++; // augmenter le niveau
@@ -162,11 +225,26 @@ function draw() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
-    drawObstacle();
     drawScore();
     drawLevel();
-    moveObstacle();
-    detectCollision();
+    obstacleList.forEach(drawObstacles);
+    obstacleList.forEach(moveObstacle);
+    obstacleList.forEach(detectCollision)
+
+}
+
+function createObstacle(){
+    let reverse = false
+    for(let i = 0 ; i<limitObstacle; i++){
+        if(reverse){
+            obstacleList.push(new Obstacle(0,-OBSTACLE_HEIGHT,reverse));
+            reverse = false;
+        }
+        else{
+            obstacleList.push(new Obstacle(canvas.width,-OBSTACLE_HEIGHT,reverse));
+            reverse = true;
+        }
+    }
 }
 
 document.addEventListener("keydown", (event) => {
@@ -178,4 +256,5 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+createObstacle();
 setInterval(draw, 10);
