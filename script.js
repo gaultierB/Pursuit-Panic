@@ -24,7 +24,7 @@ let playerSpeed = 5; // vitesse du joueur
 let level = 0;
 let limitObstacle = 3;
 let obstacleList = [];
-let limitRoad = 1;
+let limitRoad = 0;
 let listRoads = [];
 
 class Obstacle {
@@ -46,15 +46,7 @@ class Obstacle {
         if (!this.reverse) {
             this.x += speed;
             if (this.x > canvas.width) {
-                let valid;
-                let i = 0;
-                do {
-                    console.log("generate number:", i);
-                    i++;
-                    this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
-                    console.log("y=", this.y);
-                    valid = this.verifyObstacleCollision();
-                } while (!valid)
+                this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
                 this.x = -OBSTACLE_WIDTH;
                 score++;
             }
@@ -80,24 +72,6 @@ class Obstacle {
         else {
             return false;
         }
-    }
-
-    verifyObstacleCollision() {
-        for (let i in obstacleList) {
-            if (obstacleList[i].y != this.y && obstacleList[i].x != this.x) {
-                if (obstacleList[i].y < this.y + OBSTACLE_HEIGHT + 50 &&
-                    obstacleList[i].y + OBSTACLE_HEIGHT + 50 > this.y &&
-                    obstacleList[i].x < this.x + OBSTACLE_WIDTH &&
-                    obstacleList[i].x + OBSTACLE_WIDTH > this.x) {
-                    console.warn("collision detected");
-                    return false;
-                }
-            }
-            else {
-                console.log("it's me");
-            }
-        }
-        return true;
     }
 }
 
@@ -127,29 +101,21 @@ function drawLevel() {
 
 function moveObstacle(obstacle) {
     obstacle.move(obstacleSpeed);
+    obstacleList.forEach(detectCollision);
 }
 
 function detectCollision2(rect1X, rect1Y, rect1Width, rect1Height, rect2X, rect2Y, rect2Width, rect2Height) {
-    let rect1Left = rect1X;
-    let rect1Right = rect1X + rect1Width;
-    let rect1Top = rect1Y;
-    let rect1Bottom = rect1Y + rect1Height;
-    let rect2Left = rect2X;
-    let rect2Right = rect2X + rect2Width;
-    let rect2Top = rect2Y;
-    let rect2Bottom = rect2Y + rect2Height;
-
-    if (rect1Left < rect2Right &&
-        rect1Right > rect2Left &&
-        rect1Top < rect2Bottom &&
-        rect1Bottom > rect2Top) {
+    if (rect1X < rect2X + rect2Width &&
+        rect1X + rect1Width > rect2X &&
+        rect1Y < rect2Y + rect2Height &&
+        rect1Height + rect1Y > rect2Y) {
         return true;
     } else {
         return false;
     }
 }
 function checkRoad(newRoadY) {
-    if (detectCollision2(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT + 50, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)) {
+    if (detectCollision2(playerX, playerY + 10, PLAYER_WIDTH, PLAYER_HEIGHT - 90, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)) {
         return true;
     }
     for (let lastRoadY in listRoads) {
@@ -162,16 +128,17 @@ function checkRoad(newRoadY) {
 }
 
 function genRoad() {
-    // On génère la première route
-    let lastRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
-    listRoads.push(lastRoadY);
-    // On génère les routes suivantes
-    for (let i = 1; i < limitRoad; i++) {
+    for (let i = 0; i < limitRoad; i++) {
         let newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
-        while (checkRoad(newRoadY)) {
+        let cpt = 0;
+        while (checkRoad(newRoadY) && cpt != 20) {
+            console.log("boucle")
+            cpt++;
             newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
         }
+        let newRoadYRight = newRoadY + ROAD_HEIGHT + 20;
         listRoads.push(newRoadY);
+        listRoads.push(newRoadYRight);
     }
 }
 
@@ -299,11 +266,10 @@ function draw() {
     drawLevel();
     obstacleList.forEach(moveObstacle);
     obstacleList.forEach(drawObstacles);
-    obstacleList.forEach(detectCollision);
 }
 
 function createObstacle() {
-    let reverse = false
+    let reverse = true;
     for (let i = 0; i < limitObstacle; i++) {
         if (reverse) {
             obstacleList.push(new Obstacle(0, -OBSTACLE_HEIGHT, reverse));
