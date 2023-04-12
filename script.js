@@ -306,7 +306,7 @@ function draw() {
     drawLevel();
     obstacleList.forEach(moveObstacle);
     obstacleList.forEach(drawObstacles);
-    obstacleList.forEach(detectCollision)
+    obstacleList.forEach(detectCollision);
 }
 
 function createObstacle(){
