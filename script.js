@@ -177,9 +177,6 @@ function genRoad() {
         }
         listRoads.push(newRoadY);
     }
-    console.log("----");
-    console.log(listRoads);
-    console.log("" + playerX + playerY);
 }
 
 function startGame() {
