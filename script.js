@@ -125,9 +125,9 @@ function showGameOverMenu() {
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
 
-    bestScores.forEach((score, index) => {
+    bestScores.forEach((score) => {
         let bestScoreItem = document.createElement("li");
-        bestScoreItem.innerText = `${index + 1}. ${score.pseudo} : ${score.score}`;
+        bestScoreItem.innerText = ` ${score.pseudo} : ${score.score}`;
         bestScoreList.appendChild(bestScoreItem);
     });
 
