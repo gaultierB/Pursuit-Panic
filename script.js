@@ -77,7 +77,6 @@ function startGame() {
     });
 }
 
-//TODO Interface Game Over Restart Best Score
 function showGameOverMenu() {
     let menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
@@ -113,26 +112,24 @@ function showGameOverMenu() {
     };
 
     //récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
-    let bestScore = localStorage.getItem("bestScore") || 0;
-    if (score > bestScore) {
-        localStorage.setItem("bestScore", score);
-    }
     let bestScoreList = document.createElement("ol");
     let bestScoreListTitle = document.createElement("h2");
     bestScoreListTitle.innerText = "Meilleurs scores";
     menuContainer.appendChild(bestScoreListTitle);
     menuContainer.appendChild(bestScoreList);
+
     let bestScores = JSON.parse(localStorage.getItem("bestScores")) || [];
-    bestScores.push(score);
-    bestScores.sort((a, b) => b - a);
+    let pseudo = localStorage.getItem("pseudo") || "Anonyme";
+    bestScores.push({ pseudo, score });
+    bestScores.sort((a, b) => b.score - a.score);
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
-    bestScores.forEach((score) => {
+
+    bestScores.forEach((score, index) => {
         let bestScoreItem = document.createElement("li");
-        bestScoreItem.innerText = score;
+        bestScoreItem.innerText = `${index + 1}. ${score.pseudo} : ${score.score}`;
         bestScoreList.appendChild(bestScoreItem);
-    }
-    );
+    });
 
     menuContainer.appendChild(restartButton);
 
