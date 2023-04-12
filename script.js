@@ -15,8 +15,8 @@ let playerY = canvas.height - PLAYER_HEIGHT - 10;
 let obstacleX = 0;
 let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
-let obstacleSpeed = 5;
-let playerSpeed = 8; // vitesse du joueur
+let obstacleSpeed = 20;
+let playerSpeed = 15; // vitesse du joueur
 let level = 1;
 let limitObstacle = 3;
 
@@ -65,6 +65,11 @@ function moveObstacle() {
 //TODO limit spawn obstacle on road
 
 //TODO Object ?
+
+//TODO Interface Start
+function startGame() {
+    window.location.href = "hello.html";
+}
 
 //TODO Interface Game Over Restart Best Score
 function showGameOverMenu() {
@@ -116,12 +121,13 @@ function showGameOverMenu() {
     bestScores.sort((a, b) => b - a);
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
-    bestScores.forEach((score) => {
-            let bestScoreItem = document.createElement("li");
-            bestScoreItem.innerText = score;
-            bestScoreList.appendChild(bestScoreItem);
-        }
-    );
+    // Ajouter des noms d'animaux prédéfinis à chaque meilleur score
+    let animalNames = ["Lion", "Panda", "Girafe", "Ours", "Loup", "Tigre", "Zèbre", "Chien", "Chat", "Poule", "Vache", "Cheval"];
+    bestScores.forEach((score, index) => {
+        let bestScoreItem = document.createElement("li");
+        bestScoreItem.innerText = `${animalNames[index]} : ${score}`;
+        bestScoreList.appendChild(bestScoreItem);
+    });
 
     menuContainer.appendChild(restartButton);
 
@@ -129,6 +135,7 @@ function showGameOverMenu() {
     document.body.appendChild(menuContainer);
     gameOver = true;
 }
+
 
 function detectCollision() {
     if (
@@ -179,3 +186,4 @@ document.addEventListener("keydown", (event) => {
 });
 
 setInterval(draw, 10);
+
