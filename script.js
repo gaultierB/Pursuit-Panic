@@ -16,6 +16,20 @@ const roadX = 0;
 
 let playerX = canvas.width / 2 - PLAYER_WIDTH / 2;
 let playerY = canvas.height - PLAYER_HEIGHT - 10;
+
+let playerImageStop = new Image();
+playerImageStop.src = "man-stop.png"; // Image pour le joueur immobile
+
+let playerImageRun1 = new Image();
+playerImageRun1.src = "man-run-1.png"; // Image pour le joueur en mouvement 1
+
+let playerImageRun2 = new Image();
+playerImageRun2.src = "man-run-2.png"; // Image pour le joueur en mouvement 2
+
+let playerRunAnimationInterval = null;
+let playerRunImageIndex = 0;
+
+
 let obstacleX = 0;
 let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
@@ -69,7 +83,6 @@ class Obstacle {
         }
     }
 
-
     detectCollision(pPlayerX, pPlayerY, pPLAYER_HEIGHT, pPLAYER_WIDTH) {
         if (pPlayerX < this.x + OBSTACLE_WIDTH &&
             pPlayerX + pPLAYER_WIDTH > this.x &&
@@ -84,7 +97,7 @@ class Obstacle {
 
     verifyObstacleCollision() {
         for (let i in obstacleList) {
-            if (obstacleList[i].y != this.y && obstacleList[i].x != this.x) {
+            if (obstacleList[i].y != this.y && obstacleList[i].x != this.x) { // !==
                 if (obstacleList[i].y < this.y + OBSTACLE_HEIGHT + 50 &&
                     obstacleList[i].y + OBSTACLE_HEIGHT + 50 > this.y &&
                     obstacleList[i].x < this.x + OBSTACLE_WIDTH &&
@@ -102,14 +115,21 @@ class Obstacle {
 }
 
 function drawPlayer() {
-    ctx.beginPath();
-    ctx.rect(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
+    if (playerRunAnimationInterval === null) {
+        // Afficher l'image du joueur immobile
+        ctx.drawImage(playerImageStop, playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
+    } else {
+        // Afficher les images pour le joueur en mouvement
+        if (playerRunImageIndex === 0) {
+            ctx.drawImage(playerImageRun1, playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
+        } else if (playerRunImageIndex === 1) {
+            ctx.drawImage(playerImageRun2, playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
+        }
+    }
 }
 
-function drawObstacles(obstacle) {
+
+function drawObstacle(obstacle) {
     obstacle.draw("#FF0000");
 }
 
@@ -219,7 +239,6 @@ function showGameOverMenu() {
         document.location.reload();
     };
 
-
     //récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
     let bestScoreList = document.createElement("ol");
     let bestScoreListTitle = document.createElement("h2");
@@ -298,7 +317,7 @@ function draw() {
     drawScore();
     drawLevel();
     obstacleList.forEach(moveObstacle);
-    obstacleList.forEach(drawObstacles);
+    obstacleList.forEach(drawObstacle);
     obstacleList.forEach(detectCollision);
 }
 
@@ -316,14 +335,31 @@ function createObstacle() {
     }
 }
 
+
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp") {
         playerY -= playerSpeed; // mise à jour de la position du joueur
         if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
             nextLevel(); // passer au niveau suivant
         }
+        // Lancer l'animation de course
+        if (playerRunAnimationInterval === null) {
+            playerRunAnimationInterval = setInterval(() => {
+                playerRunImageIndex = (playerRunImageIndex + 1) % 2;
+            }, 200);
+        }
+    }
+});
+
+document.addEventListener("keyup", (event) => {
+    if (event.key === "ArrowUp") {
+        // Arrêter l'animation de course
+        clearInterval(playerRunAnimationInterval);
+        playerRunAnimationInterval = null;
+        playerRunImageIndex = 0;
     }
 });
 
 nextLevel();
 setInterval(draw, 10);
+
