@@ -274,6 +274,10 @@ function drawAllRoad(){
 }
 
 function nextLevel() {
+    let successSound = new Audio("resources/success.wav");
+    successSound.volume=0.2;
+    successSound.play();
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     level++; // augmenter le niveau
     playerY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
