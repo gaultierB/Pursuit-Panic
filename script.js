@@ -51,7 +51,7 @@ class Obstacle{
                 do{
                     console.log("generate number:",i);
                     i++;
-                    this.y = Math.floor(Math.random() * (canvas.height - OBSTACLE_HEIGHT));
+                    this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
                     console.log("y=",this.y);
                     valid = this.verifyObstacleCollision();
                 }while(!valid)
@@ -62,7 +62,7 @@ class Obstacle{
         else{
             this.x -= speed;
             if (this.x <= 0) {
-                this.y = Math.random() * (canvas.height - OBSTACLE_HEIGHT);
+                this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
                 this.x = canvas.width;
                 score++;
             }
