@@ -133,9 +133,6 @@ function moveObstacle(obstacle) {
     obstacle.move(obstacleSpeed);
 }
 
-function detectCollision(obstacle) {
-
-}
 function detectCollision2(rect1X, rect1Y, rect1Width, rect1Height, rect2X, rect2Y, rect2Width, rect2Height) {
     let rect1Left = rect1X;
     let rect1Right = rect1X + rect1Width;
@@ -160,7 +157,7 @@ function checkRoad(newRoadY){
         return true;
     }
     for (let lastRoadY in listRoads){
-if(detectCollision2(roadX, lastRoadY, ROAD_WIDTH, ROAD_HEIGHT, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)){
+        if(detectCollision2(roadX, lastRoadY, ROAD_WIDTH, ROAD_HEIGHT, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)){
             return true;
         }
 
@@ -170,13 +167,13 @@ return false;
 
 function genRoad() {
     // On génère la première route
-    let lastRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
+    let lastRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
     listRoads.push(lastRoadY);
     // On génère les routes suivantes
     for (let i = 1; i < limitRoad; i++) {
-        let newRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
+        let newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
         while (checkRoad(newRoadY)) {
-            newRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
+            newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
         }
         listRoads.push(newRoadY);
     }
@@ -276,12 +273,6 @@ function drawRoad(roadY){
     ctx.fillStyle = "#000000";
     ctx.fill();
     ctx.closePath();
-
-    ctx.beginPath();
-    ctx.rect(roadX, roadY, ROAD_WIDTH , ROAD_HEIGHT - 150);
-    ctx.fillStyle = "#FF0000";
-    ctx.fill();
-    ctx.closePath();
 }
 
 function drawAllRoad(){
@@ -313,12 +304,6 @@ function draw() {
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.beginPath();
-    ctx.rect(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT - 150);
-    ctx.fillStyle = "#000000";
-    ctx.fill();
-    ctx.closePath();
 
     drawAllRoad();
     drawPlayer();
