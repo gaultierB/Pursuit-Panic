@@ -68,10 +68,15 @@ function moveObstacle() {
 
 //TODO Interface Start
 function startGame() {
-    window.location.href = "hello.html";
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const pseudo = document.getElementById("pseudo").value;
+        localStorage.setItem("pseudo", pseudo);
+        window.location.href = "hello.html";
+    });
 }
 
-//TODO Interface Game Over Restart Best Score
 function showGameOverMenu() {
     let menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
@@ -106,26 +111,23 @@ function showGameOverMenu() {
         document.location.reload();
     };
 
-//récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
-    let bestScore = localStorage.getItem("bestScore") || 0;
-    if (score > bestScore) {
-        localStorage.setItem("bestScore", score);
-    }
+    //récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
     let bestScoreList = document.createElement("ol");
     let bestScoreListTitle = document.createElement("h2");
     bestScoreListTitle.innerText = "Meilleurs scores";
     menuContainer.appendChild(bestScoreListTitle);
     menuContainer.appendChild(bestScoreList);
+
     let bestScores = JSON.parse(localStorage.getItem("bestScores")) || [];
-    bestScores.push(score);
-    bestScores.sort((a, b) => b - a);
+    let pseudo = localStorage.getItem("pseudo") || "Anonyme";
+    bestScores.push({ pseudo, score });
+    bestScores.sort((a, b) => b.score - a.score);
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
-    // Ajouter des noms d'animaux prédéfinis à chaque meilleur score
-    let animalNames = ["Lion", "Panda", "Girafe", "Ours", "Loup", "Tigre", "Zèbre", "Chien", "Chat", "Poule", "Vache", "Cheval"];
-    bestScores.forEach((score, index) => {
+
+    bestScores.forEach((score) => {
         let bestScoreItem = document.createElement("li");
-        bestScoreItem.innerText = `${animalNames[index]} : ${score}`;
+        bestScoreItem.innerText = ` ${score.pseudo} : ${score.score}`;
         bestScoreList.appendChild(bestScoreItem);
     });
 
@@ -186,4 +188,3 @@ document.addEventListener("keydown", (event) => {
 });
 
 setInterval(draw, 10);
-
