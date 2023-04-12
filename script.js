@@ -1,5 +1,3 @@
-import {Road} from "./Road.js"
-
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -286,9 +284,6 @@ function nextLevel() {
     playerSpeed += 1; // augmenter la vitesse du joueur
     genRoad();
 }
-let gameOver = false;
-let requestId;
-requestId = requestAnimationFrame(draw);
 
 let gameOver = false;
 let requestId;
@@ -306,11 +301,9 @@ function draw() {
     drawPlayer();
     drawScore();
     drawLevel();
-    moveObstacle();
-    detectCollision();
     obstacleList.forEach(moveObstacle);
     obstacleList.forEach(drawObstacles);
-    obstacleList.forEach(detectCollision)
+    obstacleList.forEach(detectCollision);
 }
 
 function createObstacle(){
@@ -337,7 +330,5 @@ document.addEventListener("keydown", (event) => {
 });
 
 genRoad();
-let road = new Road(canvas, playerX, playerY);
-road.draw(ctx);
 createObstacle();
 setInterval(draw, 10);
