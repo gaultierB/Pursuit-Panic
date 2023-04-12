@@ -1,3 +1,5 @@
+import {Obstacle} from "./obstacle.js";
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -18,6 +20,7 @@ let playerSpeed = 5; // vitesse du joueur
 let level = 1;
 let limitObstacle = 4;
 const obstacleList= [];
+
 
 class Obstacle{
     constructor(x,y,reverse){
@@ -145,9 +148,9 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     drawScore();
-    drawLevel();
-    obstacleList.forEach(drawObstacles);
+    drawLevel();    
     obstacleList.forEach(moveObstacle);
+    obstacleList.forEach(drawObstacles);
     obstacleList.forEach(detectCollision)
 
 }
