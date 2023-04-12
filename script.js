@@ -27,10 +27,10 @@ let obstacleList= [];
 let limitRoad = 1;
 let listRoads = [];
 
-let soundtrack = new Audio("assets/sounds/soundtrack.mp3");
-soundtrack.volume = 0.1;
-soundtrack.loop = true;
-soundtrack.play();
+let backgroundSound = new Audio("assets/sounds/soundtrack.mp3");
+backgroundSound.volume = 0.1;
+backgroundSound.loop = true;
+backgroundSound.play();
 
 class Obstacle{
     constructor(x,y,reverse){
@@ -47,10 +47,11 @@ class Obstacle{
         ctx.closePath();
     }
 
+    //move obstacle
     move(speed){
         if(!this.reverse){
             this.x += speed;
-            if (this.x > canvas.width) {
+            if (this.x > canvas.width) {        //if the obstacle has reach the other end
                 let valid;
                 let i = 0;
                 do{
@@ -66,7 +67,7 @@ class Obstacle{
         }
         else{
             this.x -= speed;
-            if (this.x <= 0) {
+            if (this.x <= 0) {          //if the obstacle has reach the other end
                 this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
                 this.x = canvas.width;
                 score++;
@@ -74,7 +75,7 @@ class Obstacle{
         }
     }
 
-
+    // hit the player
     detectCollision(pPlayerX,pPlayerY,pPLAYER_HEIGHT,pPLAYER_WIDTH){
         if(pPlayerX < this.x + OBSTACLE_WIDTH &&
             pPlayerX + pPLAYER_WIDTH > this.x &&
@@ -88,6 +89,7 @@ class Obstacle{
         }
     }
 
+    // don't spawn in another obstacle
     verifyObstacleCollision(){
             for(let i in obstacleList){
                 if(obstacleList[i].y != this.y && obstacleList[i].x != this.x){
@@ -168,6 +170,7 @@ function checkRoad(newRoadY){
 return false;
 }
 
+//create all road
 function genRoad() {
     // On génère la première route
     let lastRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
@@ -186,7 +189,7 @@ function startGame() {
     let startSound = new Audio("assets/sounds/interaction.mp3");
         startSound.volume=0.2;
         startSound.play();
-        soundtrack.play();
+        backgroundSound.play();
     const form = document.querySelector("form");
     form.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -200,8 +203,8 @@ function showGameOverMenu() {
     let loseSound = new Audio("assets/sounds/cop-catch.mp3");
     loseSound.volume=0.1;
     loseSound.play();
-    soundtrack.pause();
-    soundtrack.currentTime = 0;
+    backgroundSound.pause();
+    backgroundSound.currentTime = 0;
 
     let menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
@@ -267,6 +270,7 @@ function showGameOverMenu() {
     gameOver = true;
 }
 
+//if the player hit a obstacle
 function detectCollision(obstacle) {
     if (
         obstacle.detectCollision(playerX,playerY,PLAYER_HEIGHT,PLAYER_WIDTH)
@@ -312,6 +316,7 @@ let gameOver = false;
 let requestId;
 requestId = requestAnimationFrame(draw);
 
+//draw everything in the game
 function draw() {
     if (gameOver) {
         cancelAnimationFrame(requestId);
