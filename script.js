@@ -8,13 +8,17 @@ canvas.height = window.innerHeight - 100;
 
 const PLAYER_WIDTH = 30;
 const PLAYER_HEIGHT = 30;
+
 const OBSTACLE_WIDTH = 50;
 const OBSTACLE_HEIGHT = 50;
-const ROAD_HEIGHT = OBSTACLE_HEIGHT;
 
+const ROAD_HEIGHT = OBSTACLE_HEIGHT;
+const ROAD_WIDTH = canvas.width;
+const roadX = 0;
 
 let playerX = canvas.width / 2 - PLAYER_WIDTH / 2;
 let playerY = canvas.height - PLAYER_HEIGHT - 10;
+
 let obstacleX = 0;
 let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
@@ -62,6 +66,37 @@ function moveObstacle() {
         score++;
     }
 }
+function detectCollision2(rect1X, rect1Y, rect1Width, rect1Height, rect2X, rect2Y, rect2Width, rect2Height) {
+    let rect1Left = rect1X;
+    let rect1Right = rect1X + rect1Width;
+    let rect1Top = rect1Y;
+    let rect1Bottom = rect1Y + rect1Height;
+    let rect2Left = rect2X;
+    let rect2Right = rect2X + rect2Width;
+    let rect2Top = rect2Y;
+    let rect2Bottom = rect2Y + rect2Height;
+
+    if (rect1Left < rect2Right &&
+        rect1Right > rect2Left &&
+        rect1Top < rect2Bottom &&
+        rect1Bottom > rect2Top) {
+        return true;
+    } else {
+        return false;
+    }
+}
+function checkRoad(newRoadY){
+    if(detectCollision2(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT + 50, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)){
+        return true;
+    }
+    for (let lastRoadY in listRoads){
+        if(detectCollision2(roadX, lastRoadY, ROAD_WIDTH, ROAD_HEIGHT, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)){
+            return true;
+        }
+
+    }
+    return false;
+}
 
 function genRoad() {
     // On génère la première route
@@ -70,36 +105,18 @@ function genRoad() {
 
     // On génère les routes suivantes
     for (let i = 1; i < limitRoad; i++) {
-        let newRoadY = lastRoadY;
+        let newRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
 
-        while (Math.abs(newRoadY - lastRoadY) < ROAD_HEIGHT || listRoads.includes(newRoadY)) {
+        while (checkRoad(newRoadY)) {
             newRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
         }
-
-        if (Math.abs(newRoadY - playerY) > PLAYER_HEIGHT + ROAD_HEIGHT) {
-            listRoads.push(newRoadY);
-            lastRoadY = newRoadY;
-        }
+        listRoads.push(newRoadY);
     }
+    console.log("----");
+    console.log(listRoads);
+    console.log("" + playerX + playerY);
 }
 
-function genRoad2() {
-    let road1 = new Road(canvas, playerX, playerY);
-    console.log(road1);
-    road1.draw(ctx);
-}
-
-//TODO multiple spawn obstacle
-    //TODO spawn obstacle not same case
-
-//TODO funtion draw road
-    //TODO limit spawn obstacle on road
-
-//TODO Object ?
-
-//TODO Interface Game Over Restart Best Score
-
-// TODO No Spawn road + road forward player
 function detectCollision() {
     if (
         playerX < obstacleX + OBSTACLE_WIDTH &&
@@ -114,8 +131,14 @@ function detectCollision() {
 
 function drawRoad(roadY){
     ctx.beginPath();
-    ctx.rect(0, roadY, canvas.width, ROAD_HEIGHT);
+    ctx.rect(roadX, roadY, ROAD_WIDTH, ROAD_HEIGHT);
     ctx.fillStyle = "#000000";
+    ctx.fill();
+    ctx.closePath();
+
+    ctx.beginPath();
+    ctx.rect(roadX, roadY, ROAD_WIDTH , ROAD_HEIGHT - 150);
+    ctx.fillStyle = "#FF0000";
     ctx.fill();
     ctx.closePath();
 }
@@ -137,6 +160,13 @@ function nextLevel() {
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.beginPath();
+    ctx.rect(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT - 150);
+    ctx.fillStyle = "#000000";
+    ctx.fill();
+    ctx.closePath();
+
     drawAllRoad();
     drawPlayer();
     drawObstacle();
@@ -159,3 +189,4 @@ genRoad();
 let road = new Road(canvas, playerX, playerY);
 road.draw(ctx);
 setInterval(draw, 10);
+
