@@ -16,6 +16,20 @@ const roadX = 0;
 
 let playerX = canvas.width / 2 - PLAYER_WIDTH / 2;
 let playerY = canvas.height - PLAYER_HEIGHT - 10;
+
+let playerImageStop = new Image();
+playerImageStop.src = "assets/man-stop.png"; // Image pour le joueur immobile
+
+let playerImageRun1 = new Image();
+playerImageRun1.src = "assets/man-run-1.png"; // Image pour le joueur en mouvement 1
+
+let playerImageRun2 = new Image();
+playerImageRun2.src = "assets/man-run-2.png"; // Image pour le joueur en mouvement 2
+
+let playerRunAnimationInterval = null;
+let playerRunImageIndex = 0;
+
+
 let obstacleX = 0;
 let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
@@ -23,9 +37,10 @@ let obstacleSpeed = 4;
 let playerSpeed = 5; // vitesse du joueur
 let level = 0;
 let limitObstacle = 3;
-let obstacleList= [];
-let limitRoad = 1;
+let obstacleList = [];
+let limitRoad = 0;
 let listRoads = [];
+let listRoadsReverse = [];
 
 let backgroundSound = new Audio("assets/sounds/soundtrack.mp3");
 backgroundSound.volume = 0.1;
@@ -39,7 +54,7 @@ class Obstacle{
         this.reverse = reverse;
     }
 
-    draw(color){
+    draw(color) {
         ctx.beginPath();
         ctx.rect(this.x, this.y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
         ctx.fillStyle = color;
@@ -47,25 +62,16 @@ class Obstacle{
         ctx.closePath();
     }
 
-    //move obstacle
-    move(speed){
-        if(!this.reverse){
+    move(speed) {
+        if (!this.reverse) {
             this.x += speed;
-            if (this.x > canvas.width) {        //if the obstacle has reach the other end
-                let valid;
-                let i = 0;
-                do{
-                    console.log("generate number:",i);
-                    i++;
-                    this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
-                    console.log("y=",this.y);
-                    valid = this.verifyObstacleCollision();
-                }while(!valid)
+            if (this.x > canvas.width) {
+                this.y = listRoadsReverse[Math.floor(Math.random() * listRoads.length)];
                 this.x = -OBSTACLE_WIDTH;
                 score++;
             }
         }
-        else{
+        else {
             this.x -= speed;
             if (this.x <= 0) {          //if the obstacle has reach the other end
                 this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
@@ -80,45 +86,31 @@ class Obstacle{
         if(pPlayerX < this.x + OBSTACLE_WIDTH &&
             pPlayerX + pPLAYER_WIDTH > this.x &&
             pPlayerY < this.y + OBSTACLE_HEIGHT &&
-            pPlayerY + pPLAYER_HEIGHT > this.y)
-            {
-                return true;
-            }
-        else{
+            pPlayerY + pPLAYER_HEIGHT > this.y) {
+            return true;
+        }
+        else {
             return false;
         }
-    }
-
-    // don't spawn in another obstacle
-    verifyObstacleCollision(){
-            for(let i in obstacleList){
-                if(obstacleList[i].y != this.y && obstacleList[i].x != this.x){
-                    if(obstacleList[i].y < this.y + OBSTACLE_HEIGHT+50 &&
-                        obstacleList[i].y + OBSTACLE_HEIGHT+50 > this.y&&
-                        obstacleList[i].x < this.x + OBSTACLE_WIDTH &&
-                        obstacleList[i].x + OBSTACLE_WIDTH > this.x)
-                    {
-                        console.warn("collision detected");
-                        return false;
-                    }
-                }
-                else{
-                    console.log("it's me");
-                }
-            }
-            return true;
     }
 }
 
 function drawPlayer() {
-    ctx.beginPath();
-    ctx.rect(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
-    ctx.fillStyle = "#0095DD";
-    ctx.fill();
-    ctx.closePath();
+    if (playerRunAnimationInterval === null) {
+        // Afficher l'image du joueur immobile
+        ctx.drawImage(playerImageStop, playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
+    } else {
+        // Afficher les images pour le joueur en mouvement
+        if (playerRunImageIndex === 0) {
+            ctx.drawImage(playerImageRun1, playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
+        } else if (playerRunImageIndex === 1) {
+            ctx.drawImage(playerImageRun2, playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
+        }
+    }
 }
 
-function drawObstacles(obstacle) {
+
+function drawObstacle(obstacle) {
     obstacle.draw("#FF0000");
 }
 
@@ -136,55 +128,49 @@ function drawLevel() {
 
 function moveObstacle(obstacle) {
     obstacle.move(obstacleSpeed);
+    obstacleList.forEach(detectCollision);
 }
 
 function detectCollision2(rect1X, rect1Y, rect1Width, rect1Height, rect2X, rect2Y, rect2Width, rect2Height) {
-    let rect1Left = rect1X;
-    let rect1Right = rect1X + rect1Width;
-    let rect1Top = rect1Y;
-    let rect1Bottom = rect1Y + rect1Height;
-    let rect2Left = rect2X;
-    let rect2Right = rect2X + rect2Width;
-    let rect2Top = rect2Y;
-    let rect2Bottom = rect2Y + rect2Height;
-
-    if (rect1Left < rect2Right &&
-        rect1Right > rect2Left &&
-        rect1Top < rect2Bottom &&
-        rect1Bottom > rect2Top) {
+    if (rect1X < rect2X + rect2Width &&
+        rect1X + rect1Width > rect2X &&
+        rect1Y < rect2Y + rect2Height &&
+        rect1Height + rect1Y > rect2Y) {
         return true;
     } else {
         return false;
     }
 }
-function checkRoad(newRoadY){
-    if(detectCollision2(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT + 50, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)){
+function checkRoad(newRoadY) {
+    let playerL = playerY + PLAYER_HEIGHT - 100;
+    let roadL = newRoadY + ROAD_HEIGHT
+
+    if (playerL < roadL) {
         return true;
     }
-    for (let lastRoadY in listRoads){
-        if(detectCollision2(roadX, lastRoadY, ROAD_WIDTH, ROAD_HEIGHT, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)){
+    for (let lastRoadY in listRoads + listRoadsReverse) {
+        if (detectCollision2(roadX, lastRoadY, ROAD_WIDTH, ROAD_HEIGHT, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)) {
             return true;
         }
-
     }
-return false;
+    return false;
 }
 
 //create all road
 function genRoad() {
-    // On génère la première route
-    let lastRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
-    listRoads.push(lastRoadY);
-    // On génère les routes suivantes
-    for (let i = 1; i < limitRoad; i++) {
+    for (let i = 0; i < limitRoad; i+=2) {
         let newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
-        while (checkRoad(newRoadY)) {
+        let cpt = 0;
+        while (checkRoad(newRoadY + 80) && cpt != 20) {
+            cpt++;
             newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
         }
         listRoads.push(newRoadY);
+        listRoadsReverse.push(newRoadY + 80);
     }
 }
 
+//TODO Interface Start
 function startGame() {
     let startSound = new Audio("assets/sounds/interaction.mp3");
         startSound.volume=0.2;
@@ -226,7 +212,7 @@ function showGameOverMenu() {
     bestScoreLabel.innerText = "Dernier Score : ";
     let bestScoreInput = document.createElement("input");
     bestScoreInput.type = "text";
-    bestScoreInput.value = localStorage.getItem("bestScore") || 0;
+    bestScoreInput.value = score;
     bestScoreInput.disabled = true;
     menuContainer.appendChild(bestScoreLabel);
     menuContainer.appendChild(bestScoreInput);
@@ -239,27 +225,27 @@ function showGameOverMenu() {
         document.location.reload();
     };
 
-
-//récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
-    let bestScore = localStorage.getItem("bestScore") || 0;
-    if (score > bestScore) {
-        localStorage.setItem("bestScore", score);
-    }
+    //récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
     let bestScoreList = document.createElement("ol");
     let bestScoreListTitle = document.createElement("h2");
     bestScoreListTitle.innerText = "Meilleurs scores";
     menuContainer.appendChild(bestScoreListTitle);
     menuContainer.appendChild(bestScoreList);
+
     let bestScores = JSON.parse(localStorage.getItem("bestScores")) || [];
-    bestScores.push(score);
-    bestScores.sort((a, b) => b - a);
+    let pseudo = localStorage.getItem("pseudo") || "Anonyme";
+    bestScores.push({ pseudo, score });
+    bestScores = bestScores.map(score => ({
+        pseudo: score.pseudo || "Anonyme",
+        score: score.score || 0
+    }));
+    bestScores.sort((a, b) => b.score - a.score);
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
-    // Ajouter des noms d'animaux prédéfinis à chaque meilleur score
-    let animalNames = ["Lion", "Panda", "Girafe", "Ours", "Loup", "Tigre", "Zèbre", "Chien", "Chat", "Poule", "Vache", "Cheval"];
-    bestScores.forEach((score, index) => {
+
+    bestScores.forEach((score) => {
         let bestScoreItem = document.createElement("li");
-        bestScoreItem.innerText = `${animalNames[index]} : ${score.score}`;
+        bestScoreItem.innerText = ` ${score.pseudo} : ${score.score}`;
         bestScoreList.appendChild(bestScoreItem);
     });
 
@@ -273,7 +259,7 @@ function showGameOverMenu() {
 //if the player hit a obstacle
 function detectCollision(obstacle) {
     if (
-        obstacle.detectCollision(playerX,playerY,PLAYER_HEIGHT,PLAYER_WIDTH)
+        obstacle.detectCollision(playerX, playerY, PLAYER_HEIGHT, PLAYER_WIDTH)
     ) {
         let hitSound = new Audio("assets/sounds/hit-car.mp3");
         hitSound.volume=0.1;
@@ -283,7 +269,7 @@ function detectCollision(obstacle) {
 }
 
 
-function drawRoad(roadY){
+function drawRoad(roadY) {
     ctx.beginPath();
     ctx.rect(roadX, roadY, ROAD_WIDTH, ROAD_HEIGHT);
     ctx.fillStyle = "#000000";
@@ -291,8 +277,9 @@ function drawRoad(roadY){
     ctx.closePath();
 }
 
-function drawAllRoad(){
+function drawAllRoad() {
     listRoads.forEach(roadY => drawRoad(roadY))
+    listRoadsReverse.forEach(roadY => drawRoad(roadY))
 }
 
 function nextLevel() {
@@ -303,10 +290,13 @@ function nextLevel() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     level++; // augmenter le niveau
     playerY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
-    limitRoad += 1;
+    if(limitRoad <= 8){
+        limitRoad += 2;
+    }
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
     listRoads = [];
+    listRoadsReverse = [];
     obstacleList = [];
     genRoad();
     createObstacle();
@@ -330,23 +320,23 @@ function draw() {
     drawScore();
     drawLevel();
     obstacleList.forEach(moveObstacle);
-    obstacleList.forEach(drawObstacles);
-    obstacleList.forEach(detectCollision);
+    obstacleList.forEach(drawObstacle);
 }
 
-function createObstacle(){
-    let reverse = false
-    for(let i = 0 ; i<limitObstacle; i++){
-        if(reverse){
-            obstacleList.push(new Obstacle(0,-OBSTACLE_HEIGHT,reverse));
+function createObstacle() {
+    let reverse = true;
+    for (let i = 0; i < limitObstacle; i++) {
+        if (reverse) {
+            obstacleList.push(new Obstacle(0, -OBSTACLE_HEIGHT, reverse));
             reverse = false;
         }
-        else{
-            obstacleList.push(new Obstacle(canvas.width,-OBSTACLE_HEIGHT,reverse));
+        else {
+            obstacleList.push(new Obstacle(canvas.width, -OBSTACLE_HEIGHT, reverse));
             reverse = true;
         }
     }
 }
+
 let pairFoot = false;
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp") {
@@ -366,8 +356,24 @@ document.addEventListener("keydown", (event) => {
         if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
             nextLevel(); // passer au niveau suivant
         }
+        // Lancer l'animation de course
+        if (playerRunAnimationInterval === null) {
+            playerRunAnimationInterval = setInterval(() => {
+                playerRunImageIndex = (playerRunImageIndex + 1) % 2;
+            }, 200);
+        }
+    }
+});
+
+document.addEventListener("keyup", (event) => {
+    if (event.key === "ArrowUp") {
+        // Arrêter l'animation de course
+        clearInterval(playerRunAnimationInterval);
+        playerRunAnimationInterval = null;
+        playerRunImageIndex = 0;
     }
 });
 
 nextLevel();
 setInterval(draw, 10);
+
