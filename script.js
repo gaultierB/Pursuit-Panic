@@ -23,18 +23,18 @@ let obstacleSpeed = 4;
 let playerSpeed = 5; // vitesse du joueur
 let level = 0;
 let limitObstacle = 3;
-let obstacleList= [];
+let obstacleList = [];
 let limitRoad = 1;
 let listRoads = [];
 
-class Obstacle{
-    constructor(x,y,reverse){
-        this.x=x;
-        this.y=y;
+class Obstacle {
+    constructor(x, y, reverse) {
+        this.x = x;
+        this.y = y;
         this.reverse = reverse;
     }
 
-    draw(color){
+    draw(color) {
         ctx.beginPath();
         ctx.rect(this.x, this.y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
         ctx.fillStyle = color;
@@ -42,24 +42,24 @@ class Obstacle{
         ctx.closePath();
     }
 
-    move(speed){
-        if(!this.reverse){
+    move(speed) {
+        if (!this.reverse) {
             this.x += speed;
             if (this.x > canvas.width) {
                 let valid;
                 let i = 0;
-                do{
-                    console.log("generate number:",i);
+                do {
+                    console.log("generate number:", i);
                     i++;
                     this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
-                    console.log("y=",this.y);
+                    console.log("y=", this.y);
                     valid = this.verifyObstacleCollision();
-                }while(!valid)
+                } while (!valid)
                 this.x = -OBSTACLE_WIDTH;
                 score++;
             }
         }
-        else{
+        else {
             this.x -= speed;
             if (this.x <= 0) {
                 this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
@@ -70,36 +70,34 @@ class Obstacle{
     }
 
 
-    detectCollision(pPlayerX,pPlayerY,pPLAYER_HEIGHT,pPLAYER_WIDTH){
-        if(pPlayerX < this.x + OBSTACLE_WIDTH &&
+    detectCollision(pPlayerX, pPlayerY, pPLAYER_HEIGHT, pPLAYER_WIDTH) {
+        if (pPlayerX < this.x + OBSTACLE_WIDTH &&
             pPlayerX + pPLAYER_WIDTH > this.x &&
             pPlayerY < this.y + OBSTACLE_HEIGHT &&
-            pPlayerY + pPLAYER_HEIGHT > this.y)
-            {
-                return true;
-            }
-        else{
+            pPlayerY + pPLAYER_HEIGHT > this.y) {
+            return true;
+        }
+        else {
             return false;
         }
     }
 
-    verifyObstacleCollision(){
-            for(let i in obstacleList){
-                if(obstacleList[i].y != this.y && obstacleList[i].x != this.x){
-                    if(obstacleList[i].y < this.y + OBSTACLE_HEIGHT+50 &&
-                        obstacleList[i].y + OBSTACLE_HEIGHT+50 > this.y&&
-                        obstacleList[i].x < this.x + OBSTACLE_WIDTH &&
-                        obstacleList[i].x + OBSTACLE_WIDTH > this.x)
-                    {
-                        console.warn("collision detected");
-                        return false;
-                    }
-                }
-                else{
-                    console.log("it's me");
+    verifyObstacleCollision() {
+        for (let i in obstacleList) {
+            if (obstacleList[i].y != this.y && obstacleList[i].x != this.x) {
+                if (obstacleList[i].y < this.y + OBSTACLE_HEIGHT + 50 &&
+                    obstacleList[i].y + OBSTACLE_HEIGHT + 50 > this.y &&
+                    obstacleList[i].x < this.x + OBSTACLE_WIDTH &&
+                    obstacleList[i].x + OBSTACLE_WIDTH > this.x) {
+                    console.warn("collision detected");
+                    return false;
                 }
             }
-            return true;
+            else {
+                console.log("it's me");
+            }
+        }
+        return true;
     }
 }
 
@@ -150,17 +148,17 @@ function detectCollision2(rect1X, rect1Y, rect1Width, rect1Height, rect2X, rect2
         return false;
     }
 }
-function checkRoad(newRoadY){
-    if(detectCollision2(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT + 50, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)){
+function checkRoad(newRoadY) {
+    if (detectCollision2(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT + 50, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)) {
         return true;
     }
-    for (let lastRoadY in listRoads){
-        if(detectCollision2(roadX, lastRoadY, ROAD_WIDTH, ROAD_HEIGHT, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)){
+    for (let lastRoadY in listRoads) {
+        if (detectCollision2(roadX, lastRoadY, ROAD_WIDTH, ROAD_HEIGHT, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)) {
             return true;
         }
 
     }
-return false;
+    return false;
 }
 
 function genRoad() {
@@ -222,26 +220,23 @@ function showGameOverMenu() {
     };
 
 
-//récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
-    let bestScore = localStorage.getItem("bestScore") || 0;
-    if (score > bestScore) {
-        localStorage.setItem("bestScore", score);
-    }
+    //récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
     let bestScoreList = document.createElement("ol");
     let bestScoreListTitle = document.createElement("h2");
     bestScoreListTitle.innerText = "Meilleurs scores";
     menuContainer.appendChild(bestScoreListTitle);
     menuContainer.appendChild(bestScoreList);
+
     let bestScores = JSON.parse(localStorage.getItem("bestScores")) || [];
-    bestScores.push(score);
-    bestScores.sort((a, b) => b - a);
+    let pseudo = localStorage.getItem("pseudo") || "Anonyme";
+    bestScores.push({ pseudo, score });
+    bestScores.sort((a, b) => b.score - a.score);
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
-    // Ajouter des noms d'animaux prédéfinis à chaque meilleur score
-    let animalNames = ["Lion", "Panda", "Girafe", "Ours", "Loup", "Tigre", "Zèbre", "Chien", "Chat", "Poule", "Vache", "Cheval"];
-    bestScores.forEach((score, index) => {
+
+    bestScores.forEach((score) => {
         let bestScoreItem = document.createElement("li");
-        bestScoreItem.innerText = `${animalNames[index]} : ${score.score}`;
+        bestScoreItem.innerText = ` ${score.pseudo} : ${score.score}`;
         bestScoreList.appendChild(bestScoreItem);
     });
 
@@ -254,14 +249,14 @@ function showGameOverMenu() {
 
 function detectCollision(obstacle) {
     if (
-        obstacle.detectCollision(playerX,playerY,PLAYER_HEIGHT,PLAYER_WIDTH)
+        obstacle.detectCollision(playerX, playerY, PLAYER_HEIGHT, PLAYER_WIDTH)
     ) {
         showGameOverMenu();
     }
 }
 
 
-function drawRoad(roadY){
+function drawRoad(roadY) {
     ctx.beginPath();
     ctx.rect(roadX, roadY, ROAD_WIDTH, ROAD_HEIGHT);
     ctx.fillStyle = "#000000";
@@ -269,7 +264,7 @@ function drawRoad(roadY){
     ctx.closePath();
 }
 
-function drawAllRoad(){
+function drawAllRoad() {
     listRoads.forEach(roadY => drawRoad(roadY))
 }
 
@@ -307,15 +302,15 @@ function draw() {
     obstacleList.forEach(detectCollision);
 }
 
-function createObstacle(){
+function createObstacle() {
     let reverse = false
-    for(let i = 0 ; i<limitObstacle; i++){
-        if(reverse){
-            obstacleList.push(new Obstacle(0,-OBSTACLE_HEIGHT,reverse));
+    for (let i = 0; i < limitObstacle; i++) {
+        if (reverse) {
+            obstacleList.push(new Obstacle(0, -OBSTACLE_HEIGHT, reverse));
             reverse = false;
         }
-        else{
-            obstacleList.push(new Obstacle(canvas.width,-OBSTACLE_HEIGHT,reverse));
+        else {
+            obstacleList.push(new Obstacle(canvas.width, -OBSTACLE_HEIGHT, reverse));
             reverse = true;
         }
     }
