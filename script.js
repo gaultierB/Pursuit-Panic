@@ -27,6 +27,11 @@ let obstacleList= [];
 let limitRoad = 1;
 let listRoads = [];
 
+let soundtrack = new Audio("assets/sounds/soundtrack.mp3");
+soundtrack.volume = 0.1;
+soundtrack.loop = true;
+soundtrack.play();
+
 class Obstacle{
     constructor(x,y,reverse){
         this.x=x;
@@ -178,6 +183,10 @@ function genRoad() {
 }
 
 function startGame() {
+    let startSound = new Audio("assets/sounds/interaction.mp3");
+        startSound.volume=0.2;
+        startSound.play();
+        soundtrack.play();
     const form = document.querySelector("form");
     form.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -188,10 +197,11 @@ function startGame() {
 }
 
 function showGameOverMenu() {
-    let loseSound = new Audio("resources/lose.wav");
-        loseSound.volume=0.2;
-        loseSound.play();
-
+    let loseSound = new Audio("assets/sounds/cop-catch.mp3");
+    loseSound.volume=0.1;
+    loseSound.play();
+    soundtrack.pause();
+    soundtrack.currentTime = 0;
 
     let menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
@@ -261,6 +271,9 @@ function detectCollision(obstacle) {
     if (
         obstacle.detectCollision(playerX,playerY,PLAYER_HEIGHT,PLAYER_WIDTH)
     ) {
+        let hitSound = new Audio("assets/sounds/hit-car.mp3");
+        hitSound.volume=0.1;
+        hitSound.play();
         showGameOverMenu();
     }
 }
@@ -279,7 +292,7 @@ function drawAllRoad(){
 }
 
 function nextLevel() {
-    let successSound = new Audio("resources/success.wav");
+    let successSound = new Audio("assets/sounds/level-passed.mp3");
     successSound.volume=0.2;
     successSound.play();
 
@@ -329,10 +342,22 @@ function createObstacle(){
         }
     }
 }
-
+let pairFoot = false;
 document.addEventListener("keydown", (event) => {
     if (event.key === "ArrowUp") {
         playerY -= playerSpeed; // mise à jour de la position du joueur
+
+        let moveSound;
+        if(pairFoot){
+            moveSound = new Audio("assets/sounds/footstep-1.mp3");
+            pairFoot = false;
+        }else{
+            moveSound = new Audio("assets/sounds/footstep-2.mp3");
+            pairFoot = true;
+        }
+        moveSound.volume=0.2;
+        moveSound.play();
+
         if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
             nextLevel(); // passer au niveau suivant
         }
