@@ -26,6 +26,7 @@ let limitObstacle = 3;
 let obstacleList = [];
 let limitRoad = 0;
 let listRoads = [];
+let listRoadsReverse = [];
 
 class Obstacle {
     constructor(x, y, reverse) {
@@ -46,7 +47,7 @@ class Obstacle {
         if (!this.reverse) {
             this.x += speed;
             if (this.x > canvas.width) {
-                this.y = listRoads[Math.floor(Math.random() * listRoads.length)];
+                this.y = listRoadsReverse[Math.floor(Math.random() * listRoads.length)];
                 this.x = -OBSTACLE_WIDTH;
                 score++;
             }
@@ -123,6 +124,7 @@ function checkRoad(newRoadY) {
     }
     for (let lastRoadY in listRoads) {
         if (detectCollision2(roadX, lastRoadY, ROAD_WIDTH, ROAD_HEIGHT, roadX, newRoadY, ROAD_WIDTH, ROAD_HEIGHT)) {
+            console.log("work ?");
             return true;
         }
     }
@@ -138,7 +140,7 @@ function genRoad() {
             newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
         }
         listRoads.push(newRoadY);
-        listRoads.push(newRoadY + 90);
+        listRoadsReverse.push(newRoadY + 90);
     }
 }
 
@@ -233,6 +235,7 @@ function drawRoad(roadY) {
 
 function drawAllRoad() {
     listRoads.forEach(roadY => drawRoad(roadY))
+    listRoadsReverse.forEach(roadY => drawRoad(roadY))
 }
 
 function nextLevel() {
