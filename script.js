@@ -227,22 +227,21 @@ function showGameOverMenu() {
     if (score > bestScore) {
         localStorage.setItem("bestScore", score);
     }
-    let bestScoreList = document.createElement("ul");
+    let bestScoreList = document.createElement("ol");
     let bestScoreListTitle = document.createElement("h2");
     bestScoreListTitle.innerText = "Meilleurs scores";
     menuContainer.appendChild(bestScoreListTitle);
     menuContainer.appendChild(bestScoreList);
-
     let bestScores = JSON.parse(localStorage.getItem("bestScores")) || [];
-    let pseudo = localStorage.getItem("pseudo") || "Anonyme";
-    bestScores.push({ pseudo, score });
-    bestScores.sort((a, b) => b.score - a.score);
+    bestScores.push(score);
+    bestScores.sort((a, b) => b - a);
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
-
-    bestScores.forEach((score) => {
+    // Ajouter des noms d'animaux prédéfinis à chaque meilleur score
+    let animalNames = ["Lion", "Panda", "Girafe", "Ours", "Loup", "Tigre", "Zèbre", "Chien", "Chat", "Poule", "Vache", "Cheval"];
+    bestScores.forEach((score, index) => {
         let bestScoreItem = document.createElement("li");
-        bestScoreItem.innerText = ` ${score.pseudo} : ${score.score}`;
+        bestScoreItem.innerText = `${animalNames[index]} : ${score.score}`;
         bestScoreList.appendChild(bestScoreItem);
     });
 
