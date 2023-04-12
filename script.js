@@ -188,6 +188,11 @@ function startGame() {
 }
 
 function showGameOverMenu() {
+    let loseSound = new Audio("resources/lose.wav");
+        loseSound.volume=0.2;
+        loseSound.play();
+
+
     let menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
     menuContainer.style.top = "50%";
