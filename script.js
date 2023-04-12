@@ -22,7 +22,7 @@ let obstacleX = 0;
 let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
 let obstacleSpeed = 5;
-let playerSpeed = 5; // vitesse du joueur
+let playerSpeed = 8; // vitesse du joueur
 let level = 1;
 let limitObstacle = 4;
 const obstacleList= [];
@@ -172,11 +172,9 @@ function genRoad() {
     // On génère la première route
     let lastRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
     listRoads.push(lastRoadY);
-
     // On génère les routes suivantes
     for (let i = 1; i < limitRoad; i++) {
         let newRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
-
         while (checkRoad(newRoadY)) {
             newRoadY = Math.random() * (canvas.height - ROAD_HEIGHT);
         }
@@ -186,7 +184,17 @@ function genRoad() {
     console.log(listRoads);
     console.log("" + playerX + playerY);
 }
-//TODO Interface Game Over Restart Best Score
+
+function startGame() {
+    const form = document.querySelector("form");
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const pseudo = document.getElementById("pseudo").value;
+        localStorage.setItem("pseudo", pseudo);
+        window.location.href = "hello.html";
+    });
+}
+
 function showGameOverMenu() {
     let menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
@@ -221,6 +229,7 @@ function showGameOverMenu() {
         document.location.reload();
     };
 
+
 //récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
     let bestScore = localStorage.getItem("bestScore") || 0;
     if (score > bestScore) {
@@ -231,17 +240,19 @@ function showGameOverMenu() {
     bestScoreListTitle.innerText = "Meilleurs scores";
     menuContainer.appendChild(bestScoreListTitle);
     menuContainer.appendChild(bestScoreList);
+
     let bestScores = JSON.parse(localStorage.getItem("bestScores")) || [];
-    bestScores.push(score);
-    bestScores.sort((a, b) => b - a);
+    let pseudo = localStorage.getItem("pseudo") || "Anonyme";
+    bestScores.push({ pseudo, score });
+    bestScores.sort((a, b) => b.score - a.score);
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
+
     bestScores.forEach((score) => {
         let bestScoreItem = document.createElement("li");
-        bestScoreItem.innerText = score;
+        bestScoreItem.innerText = ` ${score.pseudo} : ${score.score}`;
         bestScoreList.appendChild(bestScoreItem);
-    }
-    );
+    });
 
     menuContainer.appendChild(restartButton);
 
@@ -287,13 +298,15 @@ function nextLevel() {
     playerSpeed += 1; // augmenter la vitesse du joueur
     genRoad();
 }
+let gameOver = false;
+let requestId;
+requestId = requestAnimationFrame(draw);
 
 let gameOver = false;
 let requestId;
 requestId = requestAnimationFrame(draw);
 
 function draw() {
-
     if (gameOver) {
         cancelAnimationFrame(requestId);
         return;
@@ -311,10 +324,11 @@ function draw() {
     drawPlayer();
     drawScore();
     drawLevel();
+    moveObstacle();
+    detectCollision();
     obstacleList.forEach(moveObstacle);
     obstacleList.forEach(drawObstacles);
     obstacleList.forEach(detectCollision)
-
 }
 
 function createObstacle(){
@@ -345,4 +359,3 @@ let road = new Road(canvas, playerX, playerY);
 road.draw(ctx);
 createObstacle();
 setInterval(draw, 10);
-
