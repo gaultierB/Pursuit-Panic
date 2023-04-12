@@ -186,3 +186,4 @@ document.addEventListener("keydown", (event) => {
 });
 
 setInterval(draw, 10);
+
