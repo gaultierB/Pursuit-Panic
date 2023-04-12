@@ -175,6 +175,7 @@ function genRoad() {
     }
 }
 
+//TODO Interface Start
 function startGame() {
     const form = document.querySelector("form");
     form.addEventListener("submit", function (event) {
@@ -206,7 +207,7 @@ function showGameOverMenu() {
     bestScoreLabel.innerText = "Dernier Score : ";
     let bestScoreInput = document.createElement("input");
     bestScoreInput.type = "text";
-    bestScoreInput.value = score;
+    bestScoreInput.value = score
     bestScoreInput.disabled = true;
     menuContainer.appendChild(bestScoreLabel);
     menuContainer.appendChild(bestScoreInput);
@@ -219,7 +220,6 @@ function showGameOverMenu() {
         document.location.reload();
     };
 
-
     //récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
     let bestScoreList = document.createElement("ol");
     let bestScoreListTitle = document.createElement("h2");
@@ -230,6 +230,10 @@ function showGameOverMenu() {
     let bestScores = JSON.parse(localStorage.getItem("bestScores")) || [];
     let pseudo = localStorage.getItem("pseudo") || "Anonyme";
     bestScores.push({ pseudo, score });
+    bestScores = bestScores.map(score => ({
+        pseudo: score.pseudo || "Anonyme",
+        score: score.score || 0
+    }));
     bestScores.sort((a, b) => b.score - a.score);
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
