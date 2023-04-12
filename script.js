@@ -206,7 +206,7 @@ function showGameOverMenu() {
     bestScoreLabel.innerText = "Dernier Score : ";
     let bestScoreInput = document.createElement("input");
     bestScoreInput.type = "text";
-    bestScoreInput.value = localStorage.getItem("bestScore") || 0;
+    bestScoreInput.value = score;
     bestScoreInput.disabled = true;
     menuContainer.appendChild(bestScoreLabel);
     menuContainer.appendChild(bestScoreInput);
