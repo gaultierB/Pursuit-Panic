@@ -353,7 +353,11 @@ function nextLevel() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     level++; // augmenter le niveau
+
     playerY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
+    copY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
+    drawCop = false;
+
     if(limitRoad <= 8){
         limitRoad += 2;
     }
@@ -367,6 +371,7 @@ function nextLevel() {
     obstacleList = [];
     genRoad();
     createObstacle();
+    sleep(10000).then(r => drawCop = true);
 }
 
 let gameOver = false;
@@ -451,4 +456,3 @@ function sleep(ms) {
 nextLevel();
 setInterval(draw, 10);
 setInterval(moveCop, 10);
-sleep(10000).then(r => drawCop = true);
