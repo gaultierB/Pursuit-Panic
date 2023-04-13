@@ -46,7 +46,7 @@ copImageRun2.src = "assets/images/characters/cop-run-2.png"; // Image pour le jo
 
 let copRunAnimationInterval = null;
 let copRunImageIndex = 0;
-let drawCop = false;
+let drawCopBool = false;
 let chased = false;
 
 let obstacleX = 0;
@@ -61,6 +61,7 @@ let obstacleList = [];
 let limitRoad = 0;
 let listRoads = [];
 let listRoadsReverse = [];
+let copSpawnTime = 10000;
 
 let backgroundSound = new Audio("assets/sounds/soundtrack.mp3");
 backgroundSound.volume = 0.1;
@@ -146,17 +147,10 @@ function drawPlayer() {
     }
 }
 
+
+let cptFootCop = 0;
 function drawcop() {
-    if (copRunAnimationInterval === null) {
-        ctx.drawImage(copImageStop, copX, copY, cop_HEIGHT, cop_WIDTH);
-    } else {
-        // Afficher les images pour le joueur en mouvement
-        if (copRunImageIndex === 0) {
-            ctx.drawImage(copImageRun1, copX, copY, cop_HEIGHT, cop_WIDTH);
-        } else if (playerRunImageIndex === 1) {
-            ctx.drawImage(copImageRun2, copX, copY, cop_HEIGHT, cop_WIDTH);
-        }
-    }
+    ctx.drawImage(copImageStop, copX, copY, cop_HEIGHT, cop_WIDTH);
 }
 
 function drawObstacle(obstacle) {
@@ -335,7 +329,7 @@ function drawRoad(roadY) {
 }
 
 function moveCop(){
-    if((drawCop && !(copY + PLAYER_HEIGHT < 0))){
+    if((drawCopBool && !(copY + PLAYER_HEIGHT < 0))){
         copY -= copSpeed; // mise à jour de la position du policier
         copChasePlayer();
     }
@@ -356,7 +350,7 @@ function nextLevel() {
 
     playerY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
     copY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
-    drawCop = false;
+    drawCopBool = false;
 
     if(limitRoad <= 8){
         limitRoad += 2;
@@ -364,6 +358,7 @@ function nextLevel() {
     if(level % 2){
         copSpeed +=1;
     }
+    copSpawnTime = copSpawnTime / 1.1;
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
     listRoads = [];
@@ -371,8 +366,8 @@ function nextLevel() {
     obstacleList = [];
     genRoad();
     createObstacle();
-    sleep(10000).then(r => {
-        drawCop = true;
+    sleep(copSpawnTime).then(r => {
+        drawCopBool = true;
         let copSpawnSound = new Audio("assets/sounds/cop-spawn.mp3");
         copSpawnSound.volume=0.2;
         copSpawnSound.play();
@@ -398,7 +393,7 @@ function draw() {
     drawLevel();
     obstacleList.forEach(moveObstacle);
     obstacleList.forEach(drawObstacle);
-    if(drawcop){
+    if(drawCopBool){
         drawcop();
     }
 }
