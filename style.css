@@ -149,6 +149,11 @@ button {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+h2 {
+    font-weight: bold;
+    color: #086db8;
+}
+
 .rule-content {
     background-color: rgba(255, 255, 255, 0.9);
     margin: 15% auto;
@@ -156,10 +161,8 @@ button {
     border: 1px solid #888;
     width: 40%;
     opacity: 1;
-    font-weight: bold;
     color: black;
-
-
+    text-align: center;
 }
 
 .close {
@@ -174,4 +177,15 @@ button {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+span {
+    font-weight: bold;
+    color: #086db8;
+}
+
+.now {
+    font-weight: bold;
+    color: #086db8;
+
 }
