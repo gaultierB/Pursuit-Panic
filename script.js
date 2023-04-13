@@ -228,7 +228,6 @@ function startGame() {
     let startSound = new Audio("assets/sounds/interaction.mp3");
     startSound.volume = 0.2;
     startSound.play();
-    backgroundSound.play();
     const form = document.querySelector("form");
     form.addEventListener("submit", function (event) {
         event.preventDefault();
