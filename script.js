@@ -62,6 +62,7 @@ let limitRoad = 0;
 let listRoads = [];
 let listRoadsReverse = [];
 let copSpawnTime = 10000;
+let lose = false;
 
 let backgroundSound = new Audio("assets/sounds/soundtrack.mp3");
 backgroundSound.volume = 0.1;
@@ -228,59 +229,42 @@ function startGame() {
 }
 
 function showGameOverMenu() {
-    let loseSound = new Audio("assets/sounds/cop-catch.mp3");
-    loseSound.volume=0.1;
-    loseSound.play();
-    backgroundSound.pause();
-    backgroundSound.currentTime = 0;
-
     let menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
     menuContainer.style.top = "50%";
     menuContainer.style.left = "50%";
     menuContainer.style.transform = "translate(-50%, -50%)";
-    menuContainer.style.backgroundColor = "#FFFFFF";
+    menuContainer.style.backgroundColor = "#086db8";
     menuContainer.style.padding = "20px";
-    menuContainer.style.border = "2px solid #000000";
+    menuContainer.style.border = "2px solid #FFFFFF";
+    menuContainer.style.borderRadius = "10px";
     menuContainer.style.textAlign = "center";
 
     // Ajouter le texte "Game Over" au conteneur
     let gameOverText = document.createElement("h1");
     gameOverText.innerText = "Game Over";
+    gameOverText.style.fontFamily = "'Anton', sans-serif";
+    gameOverText.style.color = "white";
     menuContainer.appendChild(gameOverText);
 
     // Ajouter le champ meilleur score au conteneur
     let bestScoreLabel = document.createElement("label");
-    bestScoreLabel.innerText = "Dernier Score : ";
-    let bestScoreInput = document.createElement("input");
-    bestScoreInput.type = "text";
-    bestScoreInput.value = score;
-    bestScoreInput.disabled = true;
+    bestScoreLabel.innerText = "Vous avez marqué " + score + " points";
+    bestScoreLabel.style.color = "white";
+    bestScoreLabel.style.fontWeight = "500";
     menuContainer.appendChild(bestScoreLabel);
-    menuContainer.appendChild(bestScoreInput);
-
-    // Ajouter le bouton restart au conteneur
-    let restartButton = document.createElement("button");
-    restartButton.innerText = "Rejouer";
-    restartButton.onclick = () => {
-        localStorage.setItem("bestScore", score);
-        document.location.reload();
-    };
 
     //récupérer les 5 meilleurs scores et les afficher lorsque le jeu est terminé
     let bestScoreList = document.createElement("ol");
-    let bestScoreListTitle = document.createElement("h2");
+    let bestScoreListTitle = document.createElement("h3");
     bestScoreListTitle.innerText = "Meilleurs scores";
+    bestScoreListTitle.style.color = "white";
     menuContainer.appendChild(bestScoreListTitle);
     menuContainer.appendChild(bestScoreList);
 
     let bestScores = JSON.parse(localStorage.getItem("bestScores")) || [];
     let pseudo = localStorage.getItem("pseudo") || "Anonyme";
-    bestScores.push({ pseudo, score });
-    bestScores = bestScores.map(score => ({
-        pseudo: score.pseudo || "Anonyme",
-        score: score.score || 0
-    }));
+    bestScores.push({pseudo, score});
     bestScores.sort((a, b) => b.score - a.score);
     bestScores = bestScores.slice(0, 5);
     localStorage.setItem("bestScores", JSON.stringify(bestScores));
@@ -288,8 +272,22 @@ function showGameOverMenu() {
     bestScores.forEach((score) => {
         let bestScoreItem = document.createElement("li");
         bestScoreItem.innerText = ` ${score.pseudo} : ${score.score}`;
+        bestScoreItem.style.color = "white";
         bestScoreList.appendChild(bestScoreItem);
     });
+
+    // Ajouter le bouton restart au conteneur
+    let restartButton = document.createElement("button");
+    restartButton.innerText = "Rejouer";
+    restartButton.style.color = "#086db8";
+    restartButton.style.backgroundColor = "white";
+    restartButton.style.border = "none";
+    restartButton.style.borderRadius = "5px";
+    restartButton.style.padding = "1.5rem 2rem";
+    restartButton.onclick = () => {
+        localStorage.setItem("bestScore", score);
+        document.location.reload();
+    };
 
     menuContainer.appendChild(restartButton);
 
@@ -297,20 +295,20 @@ function showGameOverMenu() {
     document.body.appendChild(menuContainer);
     gameOver = true;
 }
-
 //if the player hit a obstacle
 function detectCollision(obstacle) {
-    if (
-        obstacle.detectCollision(playerX, playerY, PLAYER_HEIGHT, PLAYER_WIDTH)
-    ) {
+    if (obstacle.detectCollision(playerX, playerY, PLAYER_HEIGHT, PLAYER_WIDTH) && lose != true ) {
+        lose = true;
         let hitSound = new Audio("assets/sounds/hit-car.mp3");
         hitSound.volume=0.1;
         hitSound.play();
         showGameOverMenu();
+
     }
 }
 function copChasePlayer() {
-    if (detectCollision2(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT, copX, copY, cop_WIDTH, cop_HEIGHT) && chased != true) {
+    if (detectCollision2(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT, copX, copY, cop_WIDTH, cop_HEIGHT) && chased != true && lose != true) {
+        lose = true;
         chased = true;
         let hitSound = new Audio("assets/sounds/cop-catch.mp3");
         hitSound.volume=0.1;
