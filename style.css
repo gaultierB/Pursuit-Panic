@@ -104,6 +104,27 @@ h1 {
     font-weight: bolder;
 }
 
+.rules-btn {
+    text-align: center;
+    color: #ffffff;
+    width: 100%;
+    padding: 1.5rem 0;
+    border-radius: 5px;
+    border: none;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+    background: #086db8;
+    margin-top: 30px;
+    box-shadow: 3px 3px 3px #0D2B4A;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bolder;
+}
+
+
 .title.game-over {
     font-family: "Anton", sans-serif;
     font-size: 60px;
