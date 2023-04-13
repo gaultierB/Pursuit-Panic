@@ -371,7 +371,12 @@ function nextLevel() {
     obstacleList = [];
     genRoad();
     createObstacle();
-    sleep(10000).then(r => drawCop = true);
+    sleep(10000).then(r => {
+        drawCop = true;
+        let copSpawnSound = new Audio("assets/sounds/cop-spawn.mp3");
+        copSpawnSound.volume=0.2;
+        copSpawnSound.play();
+    });
 }
 
 let gameOver = false;
@@ -386,15 +391,16 @@ function draw() {
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if(drawcop){
-        drawcop();
-    }
+
     drawAllRoad();
     drawPlayer();
     drawScore();
     drawLevel();
     obstacleList.forEach(moveObstacle);
     obstacleList.forEach(drawObstacle);
+    if(drawcop){
+        drawcop();
+    }
 }
 
 function createObstacle() {
