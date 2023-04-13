@@ -7,6 +7,9 @@ canvas.height = window.innerHeight - 100;
 const PLAYER_WIDTH = 30;
 const PLAYER_HEIGHT = 30;
 
+const cop_WIDTH = 30;
+const cop_HEIGHT = 30;
+
 const OBSTACLE_WIDTH = 50;
 const OBSTACLE_HEIGHT = 50;
 
@@ -18,23 +21,40 @@ let playerX = canvas.width / 2 - PLAYER_WIDTH / 2;
 let playerY = canvas.height - PLAYER_HEIGHT - 10;
 
 let playerImageStop = new Image();
-playerImageStop.src = "assets/man-stop.png"; // Image pour le joueur immobile
+playerImageStop.src = "assets/images/characters/man-stop.png"; // Image pour le joueur immobile
 
 let playerImageRun1 = new Image();
-playerImageRun1.src = "assets/man-run-1.png"; // Image pour le joueur en mouvement 1
+playerImageRun1.src = "assets/images/characters/man-run-1.png"; // Image pour le joueur en mouvement 1
 
 let playerImageRun2 = new Image();
-playerImageRun2.src = "assets/man-run-2.png"; // Image pour le joueur en mouvement 2
+playerImageRun2.src = "assets/images/characters/man-run-2.png"; // Image pour le joueur en mouvement 2
 
 let playerRunAnimationInterval = null;
 let playerRunImageIndex = 0;
 
+let copX = canvas.width / 2 - PLAYER_WIDTH / 2;
+let copY = canvas.height - PLAYER_HEIGHT;
+
+let copImageStop = new Image();
+copImageStop.src = "assets/images/characters/cop-stop.png"; // Image pour le joueur immobile
+
+let copImageRun1 = new Image();
+copImageRun1.src = "assets/images/characters/cop-run-1.png"; // Image pour le joueur en mouvement 1
+
+let copImageRun2 = new Image();
+copImageRun2.src = "assets/images/characters/cop-run-2.png"; // Image pour le joueur en mouvement 2
+
+let copRunAnimationInterval = null;
+let copRunImageIndex = 0;
+let drawCop = false;
+let chased = false;
 
 let obstacleX = 0;
 let obstacleY = -OBSTACLE_HEIGHT;
 let score = 0;
 let obstacleSpeed = 4;
 let playerSpeed = 5; // vitesse du joueur
+let copSpeed = 1; // vitesse du policier
 let level = 0;
 let limitObstacle = 3;
 let obstacleList = [];
@@ -109,6 +129,18 @@ function drawPlayer() {
     }
 }
 
+function drawcop() {
+    if (copRunAnimationInterval === null) {
+        ctx.drawImage(copImageStop, copX, copY, cop_HEIGHT, cop_WIDTH);
+    } else {
+        // Afficher les images pour le joueur en mouvement
+        if (copRunImageIndex === 0) {
+            ctx.drawImage(copImageRun1, copX, copY, cop_HEIGHT, cop_WIDTH);
+        } else if (playerRunImageIndex === 1) {
+            ctx.drawImage(copImageRun2, copX, copY, cop_HEIGHT, cop_WIDTH);
+        }
+    }
+}
 
 function drawObstacle(obstacle) {
     obstacle.draw("#FF0000");
@@ -170,7 +202,6 @@ function genRoad() {
     }
 }
 
-//TODO Interface Start
 function startGame() {
     let startSound = new Audio("assets/sounds/interaction.mp3");
         startSound.volume=0.2;
@@ -267,6 +298,15 @@ function detectCollision(obstacle) {
         showGameOverMenu();
     }
 }
+function copChasePlayer() {
+    if (detectCollision2(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT, copX, copY, cop_WIDTH, cop_HEIGHT) && chased != true) {
+        chased = true;
+        let hitSound = new Audio("assets/sounds/cop-catch.mp3");
+        hitSound.volume=0.1;
+        hitSound.play();
+        showGameOverMenu();
+    }
+}
 
 
 function drawRoad(roadY) {
@@ -275,6 +315,13 @@ function drawRoad(roadY) {
     ctx.fillStyle = "#000000";
     ctx.fill();
     ctx.closePath();
+}
+
+function moveCop(){
+    if((drawCop && !(copY + PLAYER_HEIGHT < 0))){
+        copY -= copSpeed; // mise à jour de la position du policier
+        copChasePlayer();
+    }
 }
 
 function drawAllRoad() {
@@ -292,6 +339,9 @@ function nextLevel() {
     playerY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
     if(limitRoad <= 8){
         limitRoad += 2;
+    }
+    if(level % 2){
+        copSpeed +=1;
     }
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
@@ -314,7 +364,9 @@ function draw() {
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    if(drawcop){
+        drawcop();
+    }
     drawAllRoad();
     drawPlayer();
     drawScore();
@@ -374,6 +426,12 @@ document.addEventListener("keyup", (event) => {
     }
 });
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 nextLevel();
 setInterval(draw, 10);
-
+setInterval(moveCop, 10);
+sleep(10000).then(r => drawCop = true);
