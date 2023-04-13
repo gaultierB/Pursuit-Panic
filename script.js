@@ -68,14 +68,14 @@ backgroundSound.volume = 0.1;
 backgroundSound.loop = true;
 backgroundSound.play();
 
-class Obstacle{
-    constructor(x,y,reverse){
-        this.x=x;
-        this.y=y;
+class Obstacle {
+    constructor(x, y, reverse) {
+        this.x = x;
+        this.y = y;
         this.reverse = reverse;
 
         // Tableau contenant les chemins des images des voitures
-        const carColors = ["blue", "green","orange", "white", "yellow"];
+        const carColors = ["blue", "green", "orange", "white", "yellow"];
 
         // Générer un nombre aléatoire entre 0 et la longueur du tableau des couleurs de voitures
         const randomIndex = Math.floor(Math.random() * carColors.length);
@@ -120,8 +120,8 @@ class Obstacle{
     }
 
     // hit the player
-    detectCollision(pPlayerX,pPlayerY,pPLAYER_HEIGHT,pPLAYER_WIDTH){
-        if(pPlayerX < this.x + OBSTACLE_WIDTH &&
+    detectCollision(pPlayerX, pPlayerY, pPLAYER_HEIGHT, pPLAYER_WIDTH) {
+        if (pPlayerX < this.x + OBSTACLE_WIDTH &&
             pPlayerX + pPLAYER_WIDTH > this.x &&
             pPlayerY < this.y + OBSTACLE_HEIGHT &&
             pPlayerY + pPLAYER_HEIGHT > this.y) {
@@ -201,7 +201,7 @@ function checkRoad(newRoadY) {
 
 //create all road
 function genRoad() {
-    for (let i = 0; i < limitRoad; i+=2) {
+    for (let i = 0; i < limitRoad; i += 2) {
         let newRoadY = Math.floor(Math.random() * (canvas.height - ROAD_HEIGHT));
         let cpt = 0;
         while (checkRoad(newRoadY + 80) && cpt != 20) {
@@ -215,9 +215,9 @@ function genRoad() {
 
 function startGame() {
     let startSound = new Audio("assets/sounds/interaction.mp3");
-        startSound.volume=0.2;
-        startSound.play();
-        backgroundSound.play();
+    startSound.volume = 0.2;
+    startSound.play();
+    backgroundSound.play();
     const form = document.querySelector("form");
     form.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -227,9 +227,30 @@ function startGame() {
     });
 }
 
+function showRules() {
+
+    const rule = document.getElementById("rule");
+    const span = document.getElementsByClassName("close")[0];
+    rule.style.display = "block";
+
+    function closeRule() {
+        rule.style.display = "none";
+    }
+
+    span.onclick = function () {
+        closeRule();
+    }
+
+    window.onclick = function (event) {
+        if (event.target == rule) {
+            closeRule();
+        }
+    }
+}
+
 function showGameOverMenu() {
     let loseSound = new Audio("assets/sounds/cop-catch.mp3");
-    loseSound.volume=0.1;
+    loseSound.volume = 0.1;
     loseSound.play();
     backgroundSound.pause();
     backgroundSound.currentTime = 0;
@@ -304,7 +325,7 @@ function detectCollision(obstacle) {
         obstacle.detectCollision(playerX, playerY, PLAYER_HEIGHT, PLAYER_WIDTH)
     ) {
         let hitSound = new Audio("assets/sounds/hit-car.mp3");
-        hitSound.volume=0.1;
+        hitSound.volume = 0.1;
         hitSound.play();
         showGameOverMenu();
     }
@@ -313,7 +334,7 @@ function copChasePlayer() {
     if (detectCollision2(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT, copX, copY, cop_WIDTH, cop_HEIGHT) && chased != true) {
         chased = true;
         let hitSound = new Audio("assets/sounds/cop-catch.mp3");
-        hitSound.volume=0.1;
+        hitSound.volume = 0.1;
         hitSound.play();
         showGameOverMenu();
     }
@@ -328,8 +349,8 @@ function drawRoad(roadY) {
     ctx.closePath();
 }
 
-function moveCop(){
-    if((drawCopBool && !(copY + PLAYER_HEIGHT < 0))){
+function moveCop() {
+    if ((drawCopBool && !(copY + PLAYER_HEIGHT < 0))) {
         copY -= copSpeed; // mise à jour de la position du policier
         copChasePlayer();
     }
@@ -342,7 +363,7 @@ function drawAllRoad() {
 
 function nextLevel() {
     let successSound = new Audio("assets/sounds/level-passed.mp3");
-    successSound.volume=0.2;
+    successSound.volume = 0.2;
     successSound.play();
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -352,11 +373,11 @@ function nextLevel() {
     copY = canvas.height - PLAYER_HEIGHT; // réinitialiser la position du joueur
     drawCopBool = false;
 
-    if(limitRoad <= 8){
+    if (limitRoad <= 8) {
         limitRoad += 2;
     }
-    if(level % 2){
-        copSpeed +=1;
+    if (level % 2) {
+        copSpeed += 1;
     }
 
     clearInterval(intervaleMoveCop);
@@ -373,7 +394,7 @@ function nextLevel() {
     sleep(copSpawnTime).then(r => {
         drawCopBool = true;
         let copSpawnSound = new Audio("assets/sounds/cop-spawn.mp3");
-        copSpawnSound.volume=0.2;
+        copSpawnSound.volume = 0.2;
         copSpawnSound.play();
     });
 }
@@ -397,7 +418,7 @@ function draw() {
     drawLevel();
     obstacleList.forEach(moveObstacle);
     obstacleList.forEach(drawObstacle);
-    if(drawCopBool){
+    if (drawCopBool) {
         drawcop();
     }
 }
@@ -422,14 +443,14 @@ document.addEventListener("keydown", (event) => {
         playerY -= playerSpeed; // mise à jour de la position du joueur
 
         let moveSound;
-        if(pairFoot){
+        if (pairFoot) {
             moveSound = new Audio("assets/sounds/footstep-1.mp3");
             pairFoot = false;
-        }else{
+        } else {
             moveSound = new Audio("assets/sounds/footstep-2.mp3");
             pairFoot = true;
         }
-        moveSound.volume=0.2;
+        moveSound.volume = 0.2;
         moveSound.play();
 
         if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
