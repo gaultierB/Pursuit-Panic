@@ -475,7 +475,12 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+var isTouching = false;
+window.addEventListener("touchstart", () => isTouching = true);
+
 document.addEventListener("touchstart", (event) => {
+    while (isTouching){
+        isTouching = true;
         playerY -= playerSpeed; // mise à jour de la position du joueur
 
         let moveSound;
@@ -498,6 +503,7 @@ document.addEventListener("touchstart", (event) => {
                 playerRunImageIndex = (playerRunImageIndex + 1) % 2;
             }, 200);
         }
+    }
 });
 
 document.addEventListener("touchend", (event) => {
@@ -505,6 +511,7 @@ document.addEventListener("touchend", (event) => {
         clearInterval(playerRunAnimationInterval);
         playerRunAnimationInterval = null;
         playerRunImageIndex = 0;
+        isTouching = false;
 });
 
 function sleep(ms) {
