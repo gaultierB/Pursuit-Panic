@@ -385,6 +385,7 @@ function nextLevel() {
         limitRoad += 2;
     }
     if (level % 2) {
+        limitObstacle += 1;
         copSpeed += 1;
     }
 
@@ -474,13 +475,36 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
-document.addEventListener("keyup", (event) => {
-    if (event.key === "ArrowUp") {
+document.addEventListener("touchstart", (event) => {
+        playerY -= playerSpeed; // mise à jour de la position du joueur
+
+        let moveSound;
+        if (pairFoot) {
+            moveSound = new Audio("assets/sounds/footstep-1.mp3");
+            pairFoot = false;
+        } else {
+            moveSound = new Audio("assets/sounds/footstep-2.mp3");
+            pairFoot = true;
+        }
+        moveSound.volume = 0.2;
+        moveSound.play();
+
+        if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
+            nextLevel(); // passer au niveau suivant
+        }
+        // Lancer l'animation de course
+        if (playerRunAnimationInterval === null) {
+            playerRunAnimationInterval = setInterval(() => {
+                playerRunImageIndex = (playerRunImageIndex + 1) % 2;
+            }, 200);
+        }
+});
+
+document.addEventListener("touchend", (event) => {
         // Arrêter l'animation de course
         clearInterval(playerRunAnimationInterval);
         playerRunAnimationInterval = null;
         playerRunImageIndex = 0;
-    }
 });
 
 function sleep(ms) {
