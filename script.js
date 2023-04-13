@@ -250,6 +250,11 @@ function showRules() {
 }
 
 function showGameOverMenu() {
+    let loseSound = new Audio("assets/sounds/cop-catch.mp3");
+    loseSound.volume = 0.1;
+    loseSound.play();
+    backgroundSound.pause();
+    backgroundSound.currentTime = 0;
     let menuContainer = document.createElement("div");
     menuContainer.style.position = "absolute";
     menuContainer.style.top = "50%";
