@@ -476,37 +476,11 @@ document.addEventListener("keydown", (event) => {
 });
 
 var isTouching = false;
-window.addEventListener("touchstart", () => isTouching = true);
 
-document.addEventListener("touchstart", (event) => {
-    while (isTouching){
-        isTouching = true;
-        playerY -= playerSpeed; // mise à jour de la position du joueur
 
-        let moveSound;
-        if (pairFoot) {
-            moveSound = new Audio("assets/sounds/footstep-1.mp3");
-            pairFoot = false;
-        } else {
-            moveSound = new Audio("assets/sounds/footstep-2.mp3");
-            pairFoot = true;
-        }
-        moveSound.volume = 0.2;
-        moveSound.play();
-
-        if (playerY + PLAYER_HEIGHT < 0) { // si le joueur atteint la fin de la map
-            nextLevel(); // passer au niveau suivant
-        }
-        // Lancer l'animation de course
-        if (playerRunAnimationInterval === null) {
-            playerRunAnimationInterval = setInterval(() => {
-                playerRunImageIndex = (playerRunImageIndex + 1) % 2;
-            }, 200);
-        }
-    }
-});
 
 document.addEventListener("touchend", (event) => {
+    console.log("enbd");
         // Arrêter l'animation de course
         clearInterval(playerRunAnimationInterval);
         playerRunAnimationInterval = null;
