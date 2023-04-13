@@ -358,6 +358,10 @@ function nextLevel() {
     if(level % 2){
         copSpeed +=1;
     }
+
+    clearInterval(intervaleMoveCop);
+    intervaleMoveCop = setInterval(moveCop, 10);
+
     copSpawnTime = copSpawnTime / 1.1;
     obstacleSpeed += 1; // augmenter la vitesse de l'obstacle
     playerSpeed += 1; // augmenter la vitesse du joueur
@@ -454,6 +458,6 @@ function sleep(ms) {
 }
 
 
-nextLevel();
 setInterval(draw, 10);
-setInterval(moveCop, 10);
+let intervaleMoveCop = setInterval(moveCop, 10);
+nextLevel();
