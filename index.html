@@ -2,22 +2,27 @@
 <html>
 
 <head>
-    <title>Pursuit Panic</title>
+    <title>Pursuit Panic!</title>
     <script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div id="startGame">
-        <h1>Welcome</h1>
-        <form>
-            <label for="pseudo">Saisir votre pseudo :</label>
-            <input type="text" id="pseudo" name="pseudo" required>
-            <br>
-            <br>
-            <button type="submit" id="start-game" onclick="startGame()">Start</button>
-        </form>
+        <div class="main">
+            <div class="container">
+                <img class="logo" src="assets/logo.png" />
+                <h1 class="title">PURSUIT PANIC!</h1>
+                <form>
+                    <p class="pseudo">Pseudo</p>
+                    <label for="pseudo"></label><input type="text" id="pseudo" name="pseudo" class="input-pseudo"
+                        placeholder="Guest" required>
+                    <button type="submit" id="start-game" class="play-btn" onclick="startGame()">Jouer</button>
+                </form>
+            </div>
+        </div>
     </div>
+
     <br>
     <button onclick="showRules()">Rules</button>
 
