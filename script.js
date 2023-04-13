@@ -72,6 +72,20 @@ class Obstacle{
         this.x=x;
         this.y=y;
         this.reverse = reverse;
+
+        // Tableau contenant les chemins des images des voitures
+        const carColors = ["blue", "green","orange", "white", "yellow"];
+
+        // Générer un nombre aléatoire entre 0 et la longueur du tableau des couleurs de voitures
+        const randomIndex = Math.floor(Math.random() * carColors.length);
+
+        // Charger l'image de l'obstacle
+        this.image = new Image();
+        if (!reverse) {
+            this.image.src = `assets/images/cars/car-${carColors[randomIndex]}-r.png`;
+        } else {
+            this.image.src = `assets/images/cars/car-${carColors[randomIndex]}-l.png`;
+        }
     }
 
     draw(color) {
@@ -80,6 +94,9 @@ class Obstacle{
         ctx.fillStyle = color;
         ctx.fill();
         ctx.closePath();
+        // Afficher l'image de l'obstacle
+        ctx.drawImage(this.image, this.x, this.y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
+
     }
 
     move(speed) {
@@ -143,7 +160,7 @@ function drawcop() {
 }
 
 function drawObstacle(obstacle) {
-    obstacle.draw("#FF0000");
+    obstacle.draw("#000000");
 }
 
 function drawScore() {
