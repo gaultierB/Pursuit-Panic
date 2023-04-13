@@ -35,8 +35,23 @@ let playerRunImageIndex = 0;
 let copX = canvas.width / 2 - PLAYER_WIDTH / 2;
 let copY = canvas.height - PLAYER_HEIGHT;
 
+let road_1_1Image = new Image();
+road_1_1Image.src = "assets/images/env/road-1-1.png"; // Image pour le joueur immobile
+
+let roadExtend = new Image();
+roadExtend.src = "assets/images/env/road-extend.png"; // Image pour le joueur immobile
+
+let road_1_2Image = new Image();
+road_1_2Image.src = "assets/images/env/road-1-2.png"; // Image pour le joueur immobile
+
+let road_1_4Image = new Image();
+road_1_4Image.src = "assets/images/env/road-1-4.png"; // Image pour le joueur immobile
+
 let copImageStop = new Image();
 copImageStop.src = "assets/images/characters/cop-stop.png"; // Image pour le joueur immobile
+
+let sideWalkImage = new Image();
+sideWalkImage.src = "assets/images/env/sidewalk.png"; // Image pour le joueur immobile
 
 let copImageRun1 = new Image();
 copImageRun1.src = "assets/images/characters/cop-run-1.png"; // Image pour le joueur en mouvement 1
@@ -90,12 +105,7 @@ class Obstacle{
         }
     }
 
-    draw(color) {
-        ctx.beginPath();
-        ctx.rect(this.x, this.y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.closePath();
+    draw() {
         // Afficher l'image de l'obstacle
         ctx.drawImage(this.image, this.x, this.y, OBSTACLE_WIDTH, OBSTACLE_HEIGHT);
 
@@ -155,7 +165,7 @@ function drawcop() {
 }
 
 function drawObstacle(obstacle) {
-    obstacle.draw("#000000");
+    obstacle.draw();
 }
 
 function drawScore() {
@@ -319,11 +329,7 @@ function copChasePlayer() {
 
 
 function drawRoad(roadY) {
-    ctx.beginPath();
-    ctx.rect(roadX, roadY, ROAD_WIDTH, ROAD_HEIGHT);
-    ctx.fillStyle = "#000000";
-    ctx.fill();
-    ctx.closePath();
+    ctx.drawImage(roadExtend, 0, roadY , ROAD_WIDTH, ROAD_HEIGHT);
 }
 
 function moveCop(){
@@ -388,6 +394,7 @@ function draw() {
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(sideWalkImage, 0, 0, canvas.width, canvas.height);
 
     drawAllRoad();
     drawPlayer();
